@@ -9,9 +9,11 @@ namespace TheIssueTracker.Models
         public int TicketId { get; set; }
 
         [Required]
+        [StringLength(200, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? Title { get; set; }
 
         [Required]
+        [StringLength(400, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? Message { get; set; }
 
         [DataType(DataType.DateTime)]
