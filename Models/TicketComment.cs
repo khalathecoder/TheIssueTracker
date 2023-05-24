@@ -12,7 +12,10 @@ namespace TheIssueTracker.Models
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
 
+        [Display(Name = "Ticket Id")]
         public int TicketId { get; set; }
+
+        [Required]
         public string? UserId { get; set; }
 
         //Navigation Properties

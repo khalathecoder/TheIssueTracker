@@ -11,16 +11,16 @@ namespace TheIssueTracker.Models
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
 
-        public int TickeId { get; set; }
+        public int TicketId { get; set; }
 
         [Required]
         public string? BTUserId { get; set; }
 
         //Image Properties
         [NotMapped]
-        public virtual IFormFile? ImageFormFile { get; set; }
-        public byte[]? ImageFileData { get; set; }
-        public string? ImageFileType { get; set; }
+        public virtual IFormFile? FormFile { get; set; }
+        public byte[]? FileData { get; set; }
+        public string? FileType { get; set; }
 
 
         //Navigation Properties

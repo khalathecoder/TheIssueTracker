@@ -15,25 +15,39 @@ namespace TheIssueTracker.Models
         public Guid CompanyToken { get; set; }
 
         public int CompanyId { get; set; }
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
 
         [Required]
         public string? InvitorId { get; set; }
+
         public string? InviteeId { get; set; }
 
         [Required]
+        [Display(Name = "Email")]
         public string? InviteeEmail { get; set; }
+
         [Required]
+
+        [Display(Name = "First Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeFirstName { get; set; }
+
+
         [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeLastName { get; set; }
+
+        public string? Message { get; set; }
+
+        public bool IsValid { get; set; }
 
 
         //Navigation Properties
-        public virtual ICollection<Company> Companies { get; set; } = new HashSet<Company>();
-        public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
+        public virtual Company? Company { get; set; }
+        public virtual Project? Project { get; set; }
 
-        public virtual Invitor Invitor { get; set; }
-        public virtual Invitee Invitee { get; set; }
+        public virtual BTUser? Invitor { get; set; }
+        public virtual BTUser? Invitee { get; set; }
     }
 }

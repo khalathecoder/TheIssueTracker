@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 
 namespace TheIssueTracker.Models
 {
@@ -32,8 +31,8 @@ namespace TheIssueTracker.Models
 
         //Navigation Properties
         public virtual NotificationType? NotificationType { get; set; }
-        public virtual Sender? Sender { get; set; }
-        public virtual Recipient? Recipient { get; set; }
+        public virtual BTUser? Sender { get; set; }
+        public virtual BTUser? Recipient { get; set; }
 
         public virtual ICollection<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
         public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();

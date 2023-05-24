@@ -16,7 +16,7 @@ namespace TheIssueTracker.Models
         public DateTime Created { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime Updated { get; set; }
+        public DateTime? Updated { get; set; }
 
         public bool Archived { get; set; }
 
@@ -32,13 +32,13 @@ namespace TheIssueTracker.Models
         public string? SubmitterUserId { get; set; }
 
         //Navigation Properties
-        public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
+        public virtual Project? Project { get; set; }
         public virtual TicketPriority? TicketPriority { get; set; } 
         public virtual TicketType? TicketType { get; set; }
         public virtual TicketStatus? TicketStatus { get; set; }
 
-        public virtual SubmitterUser? SubmitterUser { get; set; }
-        public virtual DeveloperUser? DeveloperUser { get; set; }
+        public virtual BTUser? SubmitterUser { get; set; }
+        public virtual BTUser? DeveloperUser { get; set; }
 
         public virtual ICollection<TicketComment> Comments { get; set; } = new HashSet<TicketComment>();
         public virtual ICollection<TicketAttachment> Attachments { get; set; } = new HashSet<TicketAttachment>();
