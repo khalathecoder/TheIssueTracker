@@ -8,7 +8,10 @@ namespace TheIssueTracker.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Company Name")]
         public string? Name { get; set; }
+
+        [Display(Name = "Company Description")]
         public string? Description { get; set; }
 
         //Image Properties

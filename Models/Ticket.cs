@@ -20,6 +20,7 @@ namespace TheIssueTracker.Models
 
         public bool Archived { get; set; }
 
+        [Display(Name = "Archived by Project")]
         public bool ArchivedByProject { get; set; }
 
         public int ProjectId { get; set; }

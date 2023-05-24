@@ -23,18 +23,19 @@ namespace TheIssueTracker.Models
         public string? InviteeId { get; set; }
 
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "Invitee Email")]
+        [DataType(DataType.EmailAddress)]
         public string? InviteeEmail { get; set; }
 
         [Required]
 
-        [Display(Name = "First Name")]
+        [Display(Name = "Invitee First Name")]
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeFirstName { get; set; }
 
 
         [Required]
-        [Display(Name = "Last Name")]
+        [Display(Name = "Invitee Last Name")]
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? InviteeLastName { get; set; }
 

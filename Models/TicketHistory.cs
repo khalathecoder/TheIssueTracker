@@ -8,6 +8,8 @@ namespace TheIssueTracker.Models
 
         [Display(Name = "Ticket Id")]
         public int TicketId { get; set; }
+
+        [Display(Name = "Property Name")]
         public string? PropertyName { get; set; }
         public string? Description { get; set; }
 
