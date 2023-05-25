@@ -44,8 +44,8 @@ namespace TheIssueTracker.Models
         public virtual BTUser? SubmitterUser { get; set; }
         public virtual BTUser? DeveloperUser { get; set; }
 
-        public virtual ICollection<TicketComment> Comments { get; set; } = new HashSet<TicketComment>();
-        public virtual ICollection<TicketAttachment> Attachments { get; set; } = new HashSet<TicketAttachment>();
-        public virtual ICollection<TicketHistory> History { get; set; } = new HashSet<TicketHistory>();
+        public virtual ICollection<TicketComment> TicketComments { get; set; } = new HashSet<TicketComment>();
+        public virtual ICollection<TicketAttachment> TicketAttachments { get; set; } = new HashSet<TicketAttachment>();
+        public virtual ICollection<TicketHistory> TicketHistories { get; set; } = new HashSet<TicketHistory>();
     }
 }
