@@ -15,9 +15,11 @@ namespace TheIssueTracker.Models
         public string? Description { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Created Date")]
         public DateTime Created { get; set; }
 
         [DataType(DataType.DateTime)]
+        [Display(Name = "Updated Date")]
         public DateTime? Updated { get; set; }
 
         public bool Archived { get; set; }
