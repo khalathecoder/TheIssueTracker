@@ -9,11 +9,9 @@ namespace TheIssueTracker.Models
         public int CompanyId { get; set; }
 
         [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? Name { get; set; }
 
         [Required]
-        [StringLength(500, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? Description { get; set; }
 
         [DataType(DataType.DateTime)]
