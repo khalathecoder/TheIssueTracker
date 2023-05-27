@@ -31,7 +31,7 @@ namespace TheIssueTracker.Controllers
         {
             BTUser? user = await _userManager.GetUserAsync(User);
 
-            var applicationDbContext = _context.Tickets.Where(t=>t.Project.CompanyId == user.CompanyId)                                     
+            var applicationDbContext = _context.Tickets.Where(t=>t.Project!.CompanyId == user!.CompanyId)                                     
                                                 .Include(t => t.Project)                                               
                                                 .Include(t => t.DeveloperUser)
                                                 .Include(t => t.SubmitterUser)
@@ -53,13 +53,14 @@ namespace TheIssueTracker.Controllers
             BTUser? user = await _userManager.GetUserAsync(User);
 
             var ticket = await _context.Tickets.Where(t => t.Project!.CompanyId == user!.CompanyId)
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .Include(t => t.TicketPriority)
-                .Include(t => t.TicketStatus)
-                .Include(t => t.TicketType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                                               .Include(t => t.DeveloperUser)
+                                               .Include(t => t.Project)
+                                               .Include(t => t.SubmitterUser)
+                                               .Include(t => t.TicketPriority)
+                                               .Include(t => t.TicketStatus)
+                                               .Include(t => t.TicketType)
+                                               .FirstOrDefaultAsync(m => m.Id == id);
+
             if (ticket == null)
             {
                 return NotFound();
@@ -77,6 +78,7 @@ namespace TheIssueTracker.Controllers
 
             ViewData["ProjectId"] = new SelectList(projects, "Id", "Name");
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
             ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             
             return View();
@@ -89,11 +91,12 @@ namespace TheIssueTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,ProjectId,TicketTypeId,TicketPriorityId,DeveloperUserId")] Ticket ticket)
         {
-            BTUser? user = await _userManager.GetUserAsync(User); //instantiating new object of BtUser
-
+         
             ModelState.Remove("SubmitterUserId"); //since submitteruserid is required, need to remove to 
             if (ModelState.IsValid)
             {
+                BTUser? user = await _userManager.GetUserAsync(User); //instantiating new object of BtUser
+
                 //search projects db where companyid matches with user.company id and where id of current project matches ticket of projectid
                 Project? project = await _context.Projects
                                                  .Where(p=>p.CompanyId == user!.CompanyId)
@@ -135,7 +138,10 @@ namespace TheIssueTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+           BTUser? user = await _userManager.GetUserAsync(User);
+
+           Ticket? ticket = await _context.Tickets.Where(t => t.Project!.CompanyId == user!.CompanyId).FirstOrDefaultAsync(m => m.Id == id);
+
             if (ticket == null)
             {
                 return NotFound();
@@ -190,22 +196,24 @@ namespace TheIssueTracker.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Delete/5
+        // GET: Tickets/Archive/5
         public async Task<IActionResult> Archive(int? id)
         {
             if (id == null || _context.Tickets == null)
             {
                 return NotFound();
             }
+            BTUser? user = await _userManager.GetUserAsync(User);
 
             var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .Include(t => t.TicketPriority)
-                .Include(t => t.TicketStatus)
-                .Include(t => t.TicketType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                                       .Where(t => t.Project!.CompanyId == user!.CompanyId)
+                                       .Include(t => t.DeveloperUser)
+                                       .Include(t => t.Project)
+                                       .Include(t => t.SubmitterUser)
+                                       .Include(t => t.TicketPriority)
+                                       .Include(t => t.TicketStatus)
+                                       .Include(t => t.TicketType)
+                                       .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
                 return NotFound();
