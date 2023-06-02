@@ -251,8 +251,6 @@ namespace TheIssueTracker.Services
             }
         }
 
-      
-
         public async Task<bool> AddProjectManagerAsync(string? userId, int projectId, int companyId)
         {
             try
@@ -324,18 +322,32 @@ namespace TheIssueTracker.Services
 
             try
             {
-                //get list of members first
-                List<BTUser?> members = await _rolesService.GetUsersInRoleAsync(roleName, companyId);
+                Project? project = await _context.Projects
+                                    .AsNoTracking()
+                                    .Include(p => p.Members)
+                                    .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
 
+                if (project is not null)
+                {
+                    List<BTUser> members = project.Members.ToList();
+                    List<BTUser> projectMembers = new();
+                    foreach (BTUser member in members)
+                    {
+                        if (await _rolesService.IsUserInRole(member, roleName))
+                        {
+                            projectMembers.Add(member);
+                        }
+                    }
+                    return projectMembers;
+                }
 
-				return members.Where(m => m.CompanyId == companyId).ToList();
-			}
+                return new List<BTUser>();
+            }
             catch (Exception)
             {
-
                 throw;
             }
-            
+
         }
 
         public async Task<bool> AddMemberToProjectAsync(BTUser member, int projectId, int companyId)
@@ -346,12 +358,10 @@ namespace TheIssueTracker.Services
                 Project? project = await GetProjectByIdAsync(projectId, companyId);
 
 
-                bool IsOnProject = project.Members.Any(m => m.Id == member.Id && m.CompanyId == companyId);
-
-                //if not on project, add member
-                if (!IsOnProject)
+                if (project is not null)
                 {
                     project.Members.Add(member);
+                    _context.Update(project);
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -360,7 +370,6 @@ namespace TheIssueTracker.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -372,12 +381,10 @@ namespace TheIssueTracker.Services
                 //get project by Id
                 Project? project = await GetProjectByIdAsync(projectId, companyId);
 
-                bool IsOnProject = project.Members.Any(m => m.Id == member.Id && m.CompanyId == companyId);
-
-                //if on project, remove member
-                if (IsOnProject)
+                if (project is not null)
                 {
                     project.Members.Remove(member);
+                    _context.Update(project);
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -386,7 +393,6 @@ namespace TheIssueTracker.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

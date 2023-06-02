@@ -11,13 +11,12 @@ namespace TheIssueTracker.Services
     {
         private readonly ApplicationDbContext _context; //inject db
         private readonly IBTRolesService _rolesService;
-        private readonly IBTProjectService _projectService;
-
-        public BTTicketService(ApplicationDbContext context, IBTRolesService rolesService, IBTProjectService projectService)
+       
+        public BTTicketService(ApplicationDbContext context, IBTRolesService rolesService)
         {
             _context = context;
             _rolesService = rolesService;
-            _projectService = projectService;
+            
         }
 
         public async Task AddTicketAsync(Ticket ticket)

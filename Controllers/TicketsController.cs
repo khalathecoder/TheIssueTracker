@@ -56,8 +56,7 @@ namespace TheIssueTracker.Controllers
                 return NotFound();
             }
 
-            int companyId = User.Identity!.GetCompanyId();
-            Ticket? ticket = await _ticketService.GetTicketByIdAsync(id.Value, companyId);
+            Ticket? ticket = await _ticketService.GetTicketByIdAsync(id.Value, User.Identity!.GetCompanyId());
            
             if (ticket == null)
             {
@@ -73,12 +72,14 @@ namespace TheIssueTracker.Controllers
         {           
 
             List<Project> projects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
-            
+			List<TicketPriority> priorities = await _ticketService.GetTicketPriorities();
+			List<TicketType> types = await _ticketService.GetTicketTypes();
+            List<TicketStatus> statuses = await _ticketService.GetTicketStatuses();
 
-            ViewData["ProjectId"] = new SelectList(projects, "Id", "Name");
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
+			ViewData["ProjectId"] = new SelectList(projects, "Id", "Name");
+            ViewData["TicketPriorityId"] = new SelectList(priorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(types, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(statuses, "Id", "Name");
             
             return View();
         }
@@ -122,11 +123,15 @@ namespace TheIssueTracker.Controllers
                 await _ticketService.AddTicketAsync(ticket);
                 return RedirectToAction(nameof(Index));
             }
-           
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);          
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+
+			List<TicketPriority> priorities = await _ticketService.GetTicketPriorities();
+			List<TicketType> types = await _ticketService.GetTicketTypes();
+			List<TicketStatus> statuses = await _ticketService.GetTicketStatuses();
+
+			ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);          
+            ViewData["TicketPriorityId"] = new SelectList(priorities, "Id", "Id", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(statuses, "Id", "Id", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(types, "Id", "Id", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -168,18 +173,15 @@ namespace TheIssueTracker.Controllers
         {
 			if (viewModel.Ticket?.Id is not null)
 			{
-				//if unassigned is selected, remove the PM
-				if (string.IsNullOrEmpty(viewModel.DeveloperId))
+				Ticket? ticket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket.Id, User.Identity!.GetCompanyId());
+				if (ticket is not null)
 				{
-					await _rolesService.RemoveUserFromRoleAsync(viewModel.Ticket.DeveloperUser, nameof(BTRoles.Developer));
-				}
-				else  //else, add user
-				{
+					ticket.DeveloperUserId = viewModel.DeveloperId;
 
-					await _rolesService.AddUserToRoleAsync(viewModel.Ticket.DeveloperUser, nameof(BTRoles.Developer));
-				}
+					await _ticketService.UpdateTicketAsync(ticket, User.Identity!.GetCompanyId());
 
-				return RedirectToAction(nameof(Details), new { id = viewModel.Ticket!.Id });
+					return RedirectToAction(nameof(Details), new { id = viewModel.Ticket!.Id });
+				}
 			}
 
 			return BadRequest();
