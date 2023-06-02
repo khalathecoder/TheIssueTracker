@@ -14,5 +14,9 @@ namespace TheIssueTracker.Services.Interfaces
         Task<List<TicketPriority>> GetTicketPriorities();
         Task RestoreTicketAsync(Ticket ticket, int companyId);
         Task UpdateTicketAsync(Ticket ticket, int companyId);
+        Task<List<Ticket?>> GetTicketByUserIdAsync(string userId);
+        Task<List<Ticket>> GetUnassignedTicketsAsync(int companyId);
+        Task<Ticket?> GetTicketAsNoTrackingAsync(int ticketId, int companyId);
+        Task<BTUser?> GetDeveloperAsync(int projectId, int companyId);
     }
 }

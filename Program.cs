@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TheIssueTracker.Data;
+using TheIssueTracker.Extensions;
 using TheIssueTracker.Models;
 using TheIssueTracker.Services;
 using TheIssueTracker.Services.Interfaces;
@@ -17,12 +18,17 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>() //add claimsprincipal
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
 builder.Services.AddMvc();
 
+//Custom services
 builder.Services.AddScoped<IBTFileService, BTFileService>();
+builder.Services.AddScoped<IBTProjectService, BTProjectService>();
+builder.Services.AddScoped<IBTTicketService, BTTicketService>();
+builder.Services.AddScoped<IBTRolesService, BTRolesService>();
 
 var app = builder.Build();
 
