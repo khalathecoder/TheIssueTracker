@@ -10,6 +10,8 @@ namespace TheIssueTracker.Services
         private readonly string _defaultCompanyImageSrc = "/img/undraw_company.png";
         private readonly string _defaultProjectImageSrc = "/img/undraw_project.png";
 
+        private readonly string[] suffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB" };
+
         public string ConvertByteArrayToFile(byte[]? fileData, string? extension, DefaultImage defaultImage)
         {
             if (fileData is null || string.IsNullOrEmpty(extension))
@@ -43,6 +45,25 @@ namespace TheIssueTracker.Services
             {
                 throw;
             }
+        }
+
+        public string FormatFileSize(long bytes)
+        {
+            int counter = 0;
+            decimal number = bytes;
+            while (Math.Round(number / 1024) >= 1)
+            {
+                number /= 1024;
+                counter++;
+            }
+            
+            return string.Format("{0:n1}{1}", number, suffixes[counter]);
+        }
+
+        public string GetFileIcon(string file)
+        {
+            string ext = Path.GetExtension(file).Replace(".", "");
+            return $"/img/contenttype/{ext}.png";
         }
     }
 }

@@ -38,7 +38,7 @@ namespace TheIssueTracker.Services
         {
             try
             {
-                if (ticket != null)
+                if (ticket.Project.CompanyId == companyId)
                 {
                     ticket.Archived = true;
                 }
@@ -314,5 +314,49 @@ namespace TheIssueTracker.Services
                 throw;
             }
         }
+
+        public async Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment)
+        {
+            try
+            {
+                await _context.AddAsync(ticketAttachment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId)
+        {
+            try
+            {
+                TicketAttachment ticketAttachment = await _context.TicketAttachments
+                                                                  .Include(t => t.User)
+                                                                  .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
+                return ticketAttachment;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task AddTicketCommentAsync(TicketComment comment)
+        {
+			try
+			{
+				await _context.AddAsync(comment);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
     }
 }

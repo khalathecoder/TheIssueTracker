@@ -18,5 +18,8 @@ namespace TheIssueTracker.Services.Interfaces
         Task<List<Ticket>> GetUnassignedTicketsAsync(int companyId);
         Task<Ticket?> GetTicketAsNoTrackingAsync(int ticketId, int companyId);
         Task<BTUser?> GetDeveloperAsync(int projectId, int companyId);
+        Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment);
+        Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId);
+        Task AddTicketCommentAsync(TicketComment comment);
     }
 }

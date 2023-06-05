@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TheIssueTracker.Extensions;
 
 namespace TheIssueTracker.Models
 {
@@ -20,6 +22,10 @@ namespace TheIssueTracker.Models
 
         //Image Properties
         [NotMapped]
+        [DisplayName("Select a file")]
+        [DataType(DataType.Upload)]
+        [MaxFileSize(1024 * 1024)]
+        [AllowedExtensions(new string[] { ".jpg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".pdf" })]
         public virtual IFormFile? FormFile { get; set; }
         public byte[]? FileData { get; set; }
         public string? FileType { get; set; }

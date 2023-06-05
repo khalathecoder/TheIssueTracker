@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
@@ -27,15 +28,22 @@ namespace TheIssueTracker.Controllers
         private readonly IBTProjectService _projectService;
         private readonly IBTTicketService _ticketService;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTFileService _fileService;
 
 
-        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager,IBTProjectService projectService, IBTTicketService ticketService, IBTRolesService rolesService)
+        public TicketsController(ApplicationDbContext context, 
+                                 UserManager<BTUser> userManager,
+                                 IBTProjectService projectService, 
+                                 IBTTicketService ticketService, 
+                                 IBTRolesService rolesService, 
+                                 IBTFileService fileService)
         {
             _context = context;
             _userManager = userManager;
             _projectService = projectService;
             _ticketService = ticketService;
             _rolesService = rolesService;
+            _fileService = fileService;
         }
 
         // GET: Tickets
@@ -314,6 +322,68 @@ namespace TheIssueTracker.Controllers
 
             return View(await _ticketService.GetUnassignedTicketsAsync(User.Identity!.GetCompanyId()));
             
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
+        {
+            string statusMessage;
+
+            if (ModelState.IsValid && ticketAttachment.FormFile != null)
+            {
+                ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                ticketAttachment.Description = ticketAttachment.FormFile.FileName;
+                ticketAttachment.FileType = ticketAttachment.FormFile.ContentType;
+
+                ticketAttachment.Created = DateTime.UtcNow;
+                ticketAttachment.BTUserId = _userManager.GetUserId(User);
+
+                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                statusMessage = "Success: New attachment added to Ticket.";
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
+
+            }
+
+            return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
+        }
+
+        public async Task<IActionResult> ShowFile(int id)
+        {
+            TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
+            string fileName = ticketAttachment.Description;
+            byte[] fileData = ticketAttachment.FileData;
+            string ext = Path.GetExtension(fileName).Replace(".", "");
+
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(fileData, $"application/{ext}");
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> AddTicketComment([Bind("Id,Comment,TicketId")] TicketComment ticketComment)
+        {
+            string statusMessage;
+            ModelState.Remove("UserId");
+
+			if (ModelState.IsValid)
+			{
+				ticketComment.Created = DateTime.UtcNow;
+				ticketComment.UserId = _userManager.GetUserId(User);
+
+                await _ticketService.AddTicketCommentAsync(ticketComment);
+                statusMessage = "Success: New comment added to Ticket.";
+                //return RedirectToAction("Details", "Projects", new { ticketComment.TicketId });
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
+            }
+            return RedirectToAction("Details", new { id = ticketComment.TicketId, messsage = statusMessage});
+
         }
 
         private bool TicketExists(int id)

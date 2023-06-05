@@ -6,5 +6,7 @@ namespace TheIssueTracker.Services.Interfaces
     {
         string ConvertByteArrayToFile(byte[]? fileData, string? extension, DefaultImage defaultImage);
         Task<byte[]> ConvertFileToByteArrayAsync(IFormFile file);
+        string GetFileIcon(string file);
+        string FormatFileSize(long bytes);
     }
 }
