@@ -1,0 +1,170 @@
+﻿@model IEnumerable<TheIssueTracker.Models.Project>
+
+@using TheIssueTracker.Models.Enums;
+@using TheIssueTracker.Services.Interfaces;
+@using TheIssueTracker.Services;
+@inject IBTFileService _FileService
+@inject IBTProjectService _ProjectService
+
+@{
+	ViewData["Title"] = "IndexCopy";
+}
+
+
+
+
+<!-- Start Content-->
+
+	<div class="row">
+		<div class="col-sm-4">
+			<a asp-action="Create" asp-controller="Projects" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Project</a>
+		</div>
+
+	</div>
+	<!-- end row -->
+
+
+	<div class="row">
+		@foreach (Project project in Model)
+		{
+			<div class="col-xl-4">
+				<div class="card-deck">
+					<div class="card">
+						<div class="card-body project-box">
+							<div>
+
+								@if (project.Archived)
+								{
+									<h5 class="badge bg-purple float-end">Archived</h5>
+								}
+								else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(project.EndDate, DateTimeKind.Utc).Date)
+								{
+									<h5 class="badge bg-danger float-end">Overdue</h5>
+								}
+								else
+								{
+									<h5 class="badge bg-success float-end">In Progress</h5>
+								}
+							</div>
+							<h4 class="mt-0"><a href="" class="text-dark"></a></h4>
+							<p class="text-success text-uppercase font-13">@project.Name</p>
+							<p class="text-muted font-13">
+								@project.Description<a href="#" class="text-primary">View more</a>
+							</p>
+
+							<ul class="list-inline">
+								<li class="list-inline-item me-4">
+									<p class="text-muted">End Date</p><h5 class="mb-0">@project.EndDate.ToString("MM.dd.yyyy HH:mm")</h5>
+
+								</li>
+								<li class="list-inline-item">
+									<p class="text-muted">Tickets</p><h4 class="mb-0 text-end">@project.Tickets.Count</h4>
+
+								</li>
+							</ul>
+
+
+							<div class="project-members mb-2">
+								<h5 class="float-start me-3">Team :</h5>
+								<div class="avatar-group">
+									@*@foreach (Project user in Model.Members)
+								{
+								<a href="#" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="">
+								<img src="@_FileService.ConvertByteArrayToFile(Model.ImageFileData, Model.ImageFileType, DefaultImage.BTUserImage)" class="rounded-circle avatar-sm" alt="friend" />
+								</a>
+								}*@
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+	<!-- end row -->
+
+
+
+
+
+@*<h1>Index</h1>
+
+<p>
+	<a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+@*	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.Name)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Description)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Created)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.StartDate)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.EndDate)
+			</th>
+			<th>
+				<span>Image</span>
+			</th>
+			<th>
+				<span>Company</span>
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Archived)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.ProjectPriority)
+			</th>
+			<th></th>
+		</tr>
+	</thead>*@
+@*	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Description)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Created)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StartDate)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.EndDate)
+				</td>
+				<td>
+					<img style="width: 200px; height: 200px;" src="@_FileService.ConvertByteArrayToFile(item.ImageFileData,item.ImageFileType,DefaultImage.ProjectImage)" class="square-img rounded-start">
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CompanyId)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Archived)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.ProjectPriority.Name)
+				</td>
+				<td>
+					<a asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">Edit</a> |
+					<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+					<a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+					<a asp-action="AssignPM" asp-route-id="@item.Id">Assign PM</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+*@

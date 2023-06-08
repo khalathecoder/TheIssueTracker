@@ -1,0 +1,91 @@
+﻿@model IEnumerable<TheIssueTracker.Models.Ticket>
+
+@{
+	ViewData["Title"] = "Index";
+}
+
+
+<div class="row">
+	<div class="col-sm-4">
+		<a asp-action="Create" asp-controller="Tickets" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Ticket</a>
+	</div>
+
+</div>
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+			
+				<table id="datatable" class="table table-bordered dt-responsive table-responsive nowrap">
+					<thead>
+						<tr>
+							<th>Project</th>
+							<th>ID</th>
+							<th>Title</th>
+							<th>Submitter</th>
+							<th>Developer</th>
+							<th>Status</th>
+							<th>_</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						@foreach (Ticket ticket in Model)
+						{
+							<tr>
+								<td>
+									<a asp-controller="Projects" asp-action="Details" asp-route-id="@ticket.Project.Id">@ticket.Project!.Name</a>
+								</td>
+								<td>@ticket.Id</td>
+								<td>
+									<a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a>
+								</td>
+								<td>@ticket.SubmitterUser.FullName</td>
+								<td>
+									@*@(ticket.DeveloperUser == null ? "Unassigned" : ticket.DeveloperUser.FullName)*@
+									@if(ticket.DeveloperUser == null)
+									{
+										<span style="color:red">Unassigned</span>
+									}
+									else
+									{
+										@ticket.DeveloperUser.FullName;
+									}
+								</td>
+								<td>
+									@if (ticket.TicketStatus!.Name == "New")
+									{
+										<h5 class="badge bg-success">New Ticket</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Development")
+									{
+										<h5 class="badge bg-info">In Development</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Testing")
+									{
+										<h5 class="badge bg-warning">In Testing</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Resolved")
+									{
+										<h5 class="badge bg-secondary">Resolved</h5>
+									}
+								</td>
+								<td class="align-items-center">
+									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+</div> <!-- end row -->
+
+@section Scripts{
+	<script>
+		$('#datatable').DataTable();
+	</script>
+}

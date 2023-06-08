@@ -29,6 +29,7 @@ namespace TheIssueTracker.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTRolesService _rolesService;
         private readonly IBTFileService _fileService;
+        private readonly IBTTicketHistoryService _ticketHistoryService;
 
 
         public TicketsController(ApplicationDbContext context, 
@@ -36,7 +37,7 @@ namespace TheIssueTracker.Controllers
                                  IBTProjectService projectService, 
                                  IBTTicketService ticketService, 
                                  IBTRolesService rolesService, 
-                                 IBTFileService fileService)
+                                 IBTFileService fileService, IBTTicketHistoryService ticketHistoryService)
         {
             _context = context;
             _userManager = userManager;
@@ -44,6 +45,7 @@ namespace TheIssueTracker.Controllers
             _ticketService = ticketService;
             _rolesService = rolesService;
             _fileService = fileService;
+            _ticketHistoryService = ticketHistoryService;
         }
 
         // GET: Tickets
@@ -53,6 +55,15 @@ namespace TheIssueTracker.Controllers
 
             List<Ticket> tickets = await _ticketService.GetTicketsByCompanyIdAsync(companyId);
           
+            return View(tickets);
+        }
+
+        public async Task<IActionResult> IndexCopy()
+        {
+            int companyId = User.Identity!.GetCompanyId();
+
+            List<Ticket> tickets = await _ticketService.GetTicketsByCompanyIdAsync(companyId);
+
             return View(tickets);
         }
 
@@ -74,8 +85,25 @@ namespace TheIssueTracker.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Create
-        [HttpGet]
+		public async Task<IActionResult> DetailsCopy(int? id)
+		{
+			if (id == null || _context.Tickets == null)
+			{
+				return NotFound();
+			}
+
+			Ticket? ticket = await _ticketService.GetTicketByIdAsync(id.Value, User.Identity!.GetCompanyId());
+
+			if (ticket == null)
+			{
+				return NotFound();
+			}
+
+			return View(ticket);
+		}
+
+		// GET: Tickets/Create
+		[HttpGet]
         public async Task<IActionResult> Create()
         {           
 
@@ -129,6 +157,9 @@ namespace TheIssueTracker.Controllers
                 ticket.TicketStatusId = ticketStatus!.Id;
 
                 await _ticketService.AddTicketAsync(ticket);
+
+                await _ticketHistoryService.AddHistoryAsync(null, ticket, _userManager.GetUserId(User)!);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -238,7 +269,12 @@ namespace TheIssueTracker.Controllers
                     ticket.Created = DateTime.SpecifyKind(ticket.Created, DateTimeKind.Utc);
                     ticket.Updated = DateTime.UtcNow;
 
+                    Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, User.Identity!.GetCompanyId());
+
                     await _ticketService.UpdateTicketAsync(ticket, User.Identity!.GetCompanyId());
+                    ticket = (await _ticketService.GetTicketByIdAsync(ticket.Id, User.Identity!.GetCompanyId()))!;
+
+                    await _ticketHistoryService.AddHistoryAsync(oldTicket, ticket, _userManager.GetUserId(User)!);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -341,6 +377,8 @@ namespace TheIssueTracker.Controllers
 
                 await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
                 statusMessage = "Success: New attachment added to Ticket.";
+
+                await _ticketHistoryService.AddHistoryAsync(ticketAttachment.TicketId, nameof(TicketAttachment), ticketAttachment.User.Id);
             }
             else
             {
@@ -374,7 +412,10 @@ namespace TheIssueTracker.Controllers
 				ticketComment.Created = DateTime.UtcNow;
 				ticketComment.UserId = _userManager.GetUserId(User);
 
+
                 await _ticketService.AddTicketCommentAsync(ticketComment);
+
+                await _ticketHistoryService.AddHistoryAsync(ticketComment.TicketId, nameof(TicketComment), ticketComment.UserId);
                 statusMessage = "Success: New comment added to Ticket.";
                 //return RedirectToAction("Details", "Projects", new { ticketComment.TicketId });
             }

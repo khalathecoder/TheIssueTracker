@@ -2,185 +2,153 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TheIssueTracker.Data;
+using TheIssueTracker.Extensions;
 using TheIssueTracker.Models;
+using TheIssueTracker.Models.Enums;
+using TheIssueTracker.Services.Interfaces;
 
 namespace TheIssueTracker.Controllers
 {
+    [Authorize(Roles = nameof(BTRoles.Admin))]
     public class InvitesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
+	{
+		private readonly IBTInviteService _inviteService;
+		private readonly IBTProjectService _projectService;
+		private readonly IBTCompanyService _companyService;
+		private readonly IEmailSender _emailSender;
+		private readonly UserManager<BTUser> _userManager;
+		private readonly IDataProtector _protector;
+		private readonly string _protectorPurpose;
 
-        public InvitesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+		public InvitesController(IBTInviteService inviteService,
+								 IBTProjectService projectService,
+								 IBTCompanyService companyService,
+								 IEmailSender emailSender,
+								 UserManager<BTUser> userManager,
+								 IDataProtectionProvider protectionProvider)
+		{
+			_inviteService = inviteService;
+			_projectService = projectService;
+			_companyService = companyService;
+			_emailSender = emailSender;
+			_userManager = userManager;
 
-        // GET: Invites
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Invites.Include(i => i.Company).Include(i => i.Invitee).Include(i => i.Invitor).Include(i => i.Project);
-            return View(await applicationDbContext.ToListAsync());
-        }
+			_protectorPurpose = "iScribe2023!!!";
+			_protector = protectionProvider.CreateProtector(_protectorPurpose);
+		}
 
-        // GET: Invites/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Invites == null)
-            {
-                return NotFound();
-            }
 
-            var invite = await _context.Invites
-                .Include(i => i.Company)
-                .Include(i => i.Invitee)
-                .Include(i => i.Invitor)
-                .Include(i => i.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (invite == null)
-            {
-                return NotFound();
-            }
+		// GET: Invites/Create	
+        public async Task<IActionResult> Create()
+		{
+			List<Project> companyProjects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
 
-            return View(invite);
-        }
+			ViewData["ProjectId"] = new SelectList(companyProjects, "Id", "Name");
 
-        // GET: Invites/Create
-        public IActionResult Create()
-        {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description");
-            return View();
-        }
+			return View();
+		}
 
-        // POST: Invites/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InviteDate,JoinDate,CompanyToken,CompanyId,ProjectId,InvitorId,InviteeId,InviteeEmail,InviteeFirstName,InviteeLastName,Message,IsValid")] Invite invite)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(invite);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", invite.ProjectId);
-            return View(invite);
-        }
+		// POST: Invites/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]       
+        public async Task<IActionResult> Create([Bind("ProjectId,InviteeEmail,InviteeFirstName,InviteeLastName,Message")] Invite invite)
+		{
+			int companyId = User.Identity!.GetCompanyId();
 
-        // GET: Invites/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Invites == null)
-            {
-                return NotFound();
-            }
+			ModelState.Remove("InvitorId");
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					//assign invite values as we dont want user to be setting these values
+					Guid guid = Guid.NewGuid();
 
-            var invite = await _context.Invites.FindAsync(id);
-            if (invite == null)
-            {
-                return NotFound();
-            }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", invite.ProjectId);
-            return View(invite);
-        }
+					invite.CompanyToken = guid;
+					invite.CompanyId = companyId;
+					invite.InviteDate = DateTime.UtcNow;
+					invite.InvitorId = _userManager.GetUserId(User);
+					invite.IsValid = true;
 
-        // POST: Invites/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InviteDate,JoinDate,CompanyToken,CompanyId,ProjectId,InvitorId,InviteeId,InviteeEmail,InviteeFirstName,InviteeLastName,Message,IsValid")] Invite invite)
-        {
-            if (id != invite.Id)
-            {
-                return NotFound();
-            }
+					//save it
+					await _inviteService.AddNewInviteAsync(invite);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(invite);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!InviteExists(invite.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.Users, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.Users, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", invite.ProjectId);
-            return View(invite);
-        }
+					//encrypting our top secret invite info so we cannot just guess the url of the invite.
+					//token is unique and hard to guess
+					string token = _protector.Protect(guid.ToString());
+					string email = _protector.Protect(invite.InviteeEmail!);
+					string company = _protector.Protect(companyId.ToString());
 
-        // GET: Invites/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Invites == null)
-            {
-                return NotFound();
-            }
+					//magic url
+					string? callbackUrl = Url.Action("ProcessInvite", "Invites", new { token, email, company }, Request.Scheme);
 
-            var invite = await _context.Invites
-                .Include(i => i.Company)
-                .Include(i => i.Invitee)
-                .Include(i => i.Invitor)
-                .Include(i => i.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (invite == null)
-            {
-                return NotFound();
-            }
+					//send the invite email
+					string body = $@"<h4> You've been invited to join the bug tracker!</h4> <br/>
+                                        {invite.Message}<br/><br/> 
+                                        <a href=""{callbackUrl}"">Click here</a> to join our team.";
 
-            return View(invite);
-        }
+					string subject = $@"You've been invited to join The Issue Tracker";
 
-        // POST: Invites/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Invites == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Invites'  is null.");
-            }
-            var invite = await _context.Invites.FindAsync(id);
-            if (invite != null)
-            {
-                _context.Invites.Remove(invite);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+					await _emailSender.SendEmailAsync(invite.InviteeEmail!, subject, body);
 
-        private bool InviteExists(int id)
-        {
-          return (_context.Invites?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-    }
+					return RedirectToAction("Index", "Home", new { SwalMessage = "Invite Sent!" });
+				}
+				catch (Exception)
+
+				{
+
+					throw;
+				}
+			}
+
+			//if not valid, return the invite view and repop the form from view page
+			List<Project> companyProjects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+			ViewData["ProjectId"] = new SelectList(companyProjects, "Id", "Name");
+			return View(invite);
+		}
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ProcessInvite(string? token, string? email, string? company)
+		{
+			//if any of the parameters are null return not found
+			if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(company))
+			{
+				return NotFound();
+			}
+
+			//we need to decrypt these previously encrypted values
+			Guid companyToken = Guid.Parse(_protector.Unprotect(token));
+			string inviteeEmail = _protector.Unprotect(email);
+			int companyId = int.Parse(_protector.Unprotect(company));
+
+			try
+			{
+				//use getinviteasync overloaded method with diff parameters
+				Invite? invite = await _inviteService.GetInviteAsync(companyToken, inviteeEmail, companyId);
+
+				if (invite is null)
+				{
+					return NotFound();
+				}
+
+				return View(invite);
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+
+			
+		}
+	}
 }

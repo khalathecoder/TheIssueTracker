@@ -44,7 +44,14 @@ namespace TheIssueTracker.Controllers
             return View(projects);
         }
 
-        [HttpGet]
+		public async Task<IActionResult> IndexCopy()
+		{
+
+			List<Project> projects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+			return View(projects);
+		}
+
+		[HttpGet]
         [Authorize(Roles = nameof(BTRoles.Admin))]
         public async Task<IActionResult> AssignPM(int? id)
         {

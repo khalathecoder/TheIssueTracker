@@ -36,20 +36,23 @@ namespace TheIssueTracker.Services
 
         public async Task ArchiveTicketAsync(Ticket ticket, int companyId)
         {
-            try
-            {
-                if (ticket.Project.CompanyId == companyId)
-                {
-                    ticket.Archived = true;
-                }
+			try
+			{
+				Project? project = await _context.Projects.Where(p => p.CompanyId == companyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+				if (project == null)
+				{
+					return;
+				}
 
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+				ticket.Archived = true;
+				_context.Update(ticket);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
         public async Task<List<Ticket>> GetArchivedTicketsAsync(int companyId)
         {
@@ -159,27 +162,35 @@ namespace TheIssueTracker.Services
 
         public async Task RestoreTicketAsync(Ticket ticket, int companyId)
         {
-            try
-            {
-                if (ticket != null)
-                {
-                    ticket.Archived = false;
-                }
+			try
+			{
+				Project? project = await _context.Projects.Where(p => p.CompanyId == companyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+				if (project == null)
+				{
+					return;
+				}
 
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+				ticket.Archived = false;
+				_context.Update(ticket);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
         public async Task UpdateTicketAsync(Ticket ticket, int companyId)
         {
             try
             {
-                _context.Update(ticket);
+				Project? project = await _context.Projects.Where(p => p.CompanyId == companyId).FirstOrDefaultAsync(p => p.Id == ticket.ProjectId);
+				if (project == null)
+				{
+					return;
+				}
+
+				_context.Update(ticket);
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
@@ -243,13 +254,16 @@ namespace TheIssueTracker.Services
         {
             try
             {
-                return await _context.Tickets.Where(t => t.DeveloperUserId == null && t.Archived == false && t.Project!.CompanyId == companyId)
-                    .Include(t => t.Project)
-                    .Include(t => t.TicketStatus)
-                    .Include(t => t.TicketType)
-                    .Include(t => t.TicketPriority)
-                    .Include(t => t.SubmitterUser)
-                    .ToListAsync();
+                return await _context.Tickets
+                                            .Include(t => t.Project)
+						                        .ThenInclude(p => p!.Members)
+					                        .Where(t => t.Project!.CompanyId == companyId && t.DeveloperUserId == null && !t.Archived)
+					                        .Include(t => t.Project)
+                                            .Include(t => t.TicketStatus)
+                                            .Include(t => t.TicketType)
+                                            .Include(t => t.TicketPriority)
+                                            .Include(t => t.SubmitterUser)
+                                            .ToListAsync();
             }
             catch (Exception)
             {
@@ -329,11 +343,11 @@ namespace TheIssueTracker.Services
             }
         }
 
-        public async Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId)
+        public async Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int ticketAttachmentId)
         {
             try
             {
-                TicketAttachment ticketAttachment = await _context.TicketAttachments
+                TicketAttachment? ticketAttachment = await _context.TicketAttachments
                                                                   .Include(t => t.User)
                                                                   .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
                 return ticketAttachment;

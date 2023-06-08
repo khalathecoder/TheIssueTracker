@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Common;
 using TheIssueTracker.Data;
 using TheIssueTracker.Models;
+using TheIssueTracker.Models.Enums;
 using TheIssueTracker.Services.Interfaces;
 
 namespace TheIssueTracker.Services
@@ -37,7 +38,7 @@ namespace TheIssueTracker.Services
         {
             try
             {
-                return await _context.Roles.ToListAsync();              
+                return await _context.Roles.Where(r=>r.Name != nameof(BTRoles.DemoUser)).ToListAsync();              
             }
             catch (Exception)
             {
