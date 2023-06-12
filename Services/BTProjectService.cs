@@ -228,8 +228,8 @@ namespace TheIssueTracker.Services
                 //get project first
                 Project? project = await _context.Projects
                                                 .AsNoTracking()
-                                                .Include(p => p.Members)
-                                                .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+                                                .Include(p => p.Members)                                                  
+												.FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
 
                 
                 if (project is not null)

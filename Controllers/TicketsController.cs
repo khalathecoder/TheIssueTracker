@@ -37,7 +37,8 @@ namespace TheIssueTracker.Controllers
                                  IBTProjectService projectService, 
                                  IBTTicketService ticketService, 
                                  IBTRolesService rolesService, 
-                                 IBTFileService fileService, IBTTicketHistoryService ticketHistoryService)
+                                 IBTFileService fileService, 
+                                 IBTTicketHistoryService ticketHistoryService)
         {
             _context = context;
             _userManager = userManager;
@@ -210,6 +211,7 @@ namespace TheIssueTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel viewModel)
         {
+
 			if (viewModel.Ticket?.Id is not null)
 			{
 				Ticket? ticket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket.Id, User.Identity!.GetCompanyId());
@@ -219,6 +221,7 @@ namespace TheIssueTracker.Controllers
 
 					await _ticketService.UpdateTicketAsync(ticket, User.Identity!.GetCompanyId());
 
+                  
 					return RedirectToAction(nameof(Details), new { id = viewModel.Ticket!.Id });
 				}
 			}
@@ -355,8 +358,10 @@ namespace TheIssueTracker.Controllers
 
         public async Task<IActionResult> UnassignedTickets()
         {
+            AssignDeveloperViewModel viewModel = new();
+            ViewBag.ViewModel = viewModel;
 
-            return View(await _ticketService.GetUnassignedTicketsAsync(User.Identity!.GetCompanyId()));
+			return View(await _ticketService.GetUnassignedTicketsAsync(User.Identity!.GetCompanyId()));
             
         }
 

@@ -1,102 +1,143 @@
 ﻿@model IEnumerable<TheIssueTracker.Models.Ticket>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Updated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Archived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArchivedByProject)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Project)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketPriority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubmitterUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeveloperUser)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Updated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Archived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArchivedByProject)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.Description)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.TicketPriority.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketType.Name)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.TicketStatus.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubmitterUser.FullName)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
-                    <a asp-action="AssignDeveloper" asp-route-id="@item.Id">Assign Developer</a>
-            </td>
-        </tr>
+<div class="row">
+	<div class="col-sm-4">
+		<a asp-action="Create" asp-controller="Tickets" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Ticket</a>
+	</div>
+
+</div>
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+
+				<table id="datatable" class="table table-bordered dt-responsive table-responsive nowrap">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>ID</th>
+							<th>Description</th>
+							<th>Project</th>
+							<th>Submitter</th>
+							<th>Developer</th>
+							<th>Priority</th>
+							<th>Status</th>
+							<th>Type</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						@foreach (Ticket ticket in Model)
+						{
+							<tr>
+								<td>
+									<a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a>
+								</td>
+								<td>@ticket.Id</td>
+								<td>@ticket.Description</td>
+								<td>
+									<a asp-controller="Projects" asp-action="Details" asp-route-id="@ticket.Project.Id">@ticket.Project!.Name</a>
+								</td>
+								<td>@ticket.SubmitterUser!.FullName</td>
+								<td>									
+									@if (ticket.DeveloperUser == null)
+									{
+										<span style="color:red">Unassigned</span>
+
+									}
+									else
+									{
+										@ticket.DeveloperUser.FullName;
+									}
+								</td>
+								@*Priority*@
+								<td>
+									@if (ticket.TicketPriority!.Name == "Urgent")
+									{
+										<h5 style="color:firebrick">Urgent</h5>
+									}
+									else if (ticket.TicketPriority!.Name == "High")
+									{
+										<h5 style="color:orangered">High</h5>
+
+									}
+									else if (ticket.TicketPriority!.Name == "Medium")
+									{
+										<h5 style="color:darkslateblue">Medium</h5>
+									}
+									else if (ticket.TicketPriority!.Name == "Low")
+									{
+										<h5 style="color:forestgreen">Low</h5>
+									}
+
+								</td>
+								@*Status*@
+								<td>
+									@if (ticket.TicketStatus!.Name == "New")
+									{
+										<h5 class="badge bg-success">New Ticket</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Development")
+									{
+										<h5 class="badge bg-info">In Development</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Testing")
+									{
+										<h5 class="badge bg-warning">In Testing</h5>
+									}
+									else if (ticket.TicketStatus!.Name == "Resolved")
+									{
+										<h5 class="badge bg-secondary">Resolved</h5>
+									}
+								</td>
+								@*Type*@
+								<td>
+									@if (ticket.TicketType!.Name == "NewDevelopment")
+									{
+										<h5 class="badge bg-pink">New Development</h5>
+									}
+									else if (ticket.TicketType!.Name == "WorkTask")
+									{
+										<h5 class="badge bg-primary">Work Task</h5>
+									}
+									else if (ticket.TicketType!.Name == "Defect")
+									{
+										<h5 class="badge bg-danger">Defect</h5>
+									}
+									else if (ticket.TicketType!.Name == "ChangeRequest")
+									{
+										<h5 class="badge bg-info">Change Request</h5>
+									}
+									else if (ticket.TicketType!.Name == "Enhancement")
+									{
+										<h5 class="badge bg-success">Enhancement</h5>
+									}
+									else if (ticket.TicketType!.Name == "GeneralTask")
+									{
+										<h5 class="badge bg-light">General Task</h5>
+									}
+								</td>
+								<td class="d-flex justify-content-between">
+									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+</div> <!-- end row -->
+@section Scripts{
+	<script>
+		$('#datatable').DataTable();
+	</script>
 }
-    </tbody>
-</table>

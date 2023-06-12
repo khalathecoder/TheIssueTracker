@@ -4,7 +4,7 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<h1>Archive</h1>
 
 <h3>Are you sure you want to archive this?</h3>
 <div>
@@ -57,31 +57,31 @@
             @Html.DisplayNameFor(model => model.TicketPriority)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketPriority.Id)
+            @Html.DisplayFor(model => model.TicketPriority.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TicketType)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketType.Id)
+            @Html.DisplayFor(model => model.TicketType.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TicketStatus)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketStatus.Id)
+            @Html.DisplayFor(model => model.TicketStatus.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.SubmitterUser)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubmitterUser.Id)
+            @Html.DisplayFor(model => model.SubmitterUser.FullName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DeveloperUser)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeveloperUser.Id)
+            @Html.DisplayFor(model => model.DeveloperUser.FullName)
         </dd>
     </dl>
     
