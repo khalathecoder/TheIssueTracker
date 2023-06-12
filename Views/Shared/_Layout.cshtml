@@ -342,32 +342,34 @@
 						<li class="menu-title">Navigation</li>
 
 						<li>
-							<a href="index.html">
+							<a asp-controller="Home" asp-action="Dashboard">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span> Dashboard </span>
 							</a>
 						</li>
 						
-						@if (User.IsInRole("Admin"))
-						{
+						
 							<li>
-								<a href="#sidebarTasks" data-bs-toggle="collapse">
+								<a href="#email" data-bs-toggle="collapse">
 									<i class="mdi mdi-view-dashboard-outline"></i>
 									<span> Company </span>
 									<span class="menu-arrow"></span>
 								</a>
-								<div  class="collapse" >
+								<div class="collapse" id="email">
 									<ul class="nav-second-level">										
 										<li>
 											<a asp-controller="Company" asp-action="Index">Company Details</a>
 										</li>
+									@if (User.IsInRole("Admin"))
+									{
 										<li>
 											<a asp-controller="Company" asp-action="ManageUserRoles"> Manage All Roles</a>
 										</li>
+									}
 									</ul>
 								</div>
 							</li>
-						}
+						
 						
 						<li class="menu-title mt-2">Projects</li>
 
@@ -382,7 +384,7 @@
 									@if ((User.IsInRole("Admin")) || (User.IsInRole("Project Manager")))
 									{
 										<li>
-											<a asp-controller="Projects" asp-action="Create"> Add New Project</a>
+											<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate"> Add New Project</a>
 										</li>
 									}
 									<li>
@@ -407,15 +409,15 @@
 						<li class="menu-title mt-2">Tickets</li>
 
 						<li>
-							<a href="#sidebarTasks" data-bs-toggle="collapse">
+							<a href="#contacts" data-bs-toggle="collapse">
 								<i class="mdi mdi-clipboard-outline"></i>
 								<span> Tickets </span>
 								<span class="menu-arrow"></span>
 							</a>
-							<div class="collapse" id="sidebarTasks">
+							<div class="collapse" id="contacts">
 								<ul class="nav-second-level">
 									<li>
-										<a asp-controller="Tickets" asp-action="Create">Add New Ticket</a>
+										<a href="" data-bs-toggle="modal" data-bs-target="#TicketsCreate">Add New Ticket</a>
 									</li>
 									<li>
 										<a asp-controller="Tickets" asp-action="Index">All Tickets</a>

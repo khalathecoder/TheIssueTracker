@@ -21,19 +21,19 @@
 		font-size: 22px;
 	}
 </style>
+
 <div class="post-single-wrapper axil-section-gap bg-color-white">
 	<div class="container">
 		<h1>Create</h1>
 		<h4>Project</h4>
 	</div>
-	<hr />
-	<main class="container mt-5">
+	<main class="border border-2 shadow-lg bg-light">
 		<form asp-action="Create" enctype="multipart/form-data">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<div class="row">
 				<div class="col-12 col-lg-4">
 					<div class="form-group">
-						<label asp-for="ImageFormFile" class="control-label">Blog Post Image</label>
+						<label asp-for="ImageFormFile" class="control-label">Project Image</label>
 						<img class="img-fluid border rounded-3 mb-2" style="max-height: 350px;" src="@_FileService.ConvertByteArrayToFile(Model.ImageFileData,Model.ImageFileType,DefaultImage.ProjectImage)" id="blogImage">
 						<input asp-for="ImageFormFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
 		  onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
@@ -43,11 +43,6 @@
 						<input asp-for="Name" class="form-control" />
 						<span asp-validation-for="Name" class="text-danger"></span>
 					</div>
-@*					<div class="form-group">
-						<label asp-for="" class="control-label"></label>
-						<textarea asp-for="Abstract" class="form-control" rows="1"></textarea>
-						<span asp-validation-for="Abstract" class="text-danger"></span>
-					</div>*@
 					<div class="form-group">
 						<label asp-for="StartDate" class="control-label"></label>
 						<input asp-for="StartDate" class="form-control" />
@@ -71,7 +66,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="form-group d-flex justify-content-end">
+			<div class="form-group d-flex justify-content-end p-4">
 				<input type="submit" value="Create" class="btn btn-primary" />
 			</div>
 		</form>
@@ -98,6 +93,31 @@
 			});
 	</script>
 }
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+	Launch static backdrop modal
+</button>
+
+<!-- Modal -->
+@*Create Project Modal*@
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				...
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Understood</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 

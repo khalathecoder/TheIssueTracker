@@ -2,7 +2,7 @@
 
 @{
 	var viewModel = ViewBag.ViewModel;
-	
+
 }
 
 @{
@@ -108,11 +108,11 @@
 									}
 								</td>
 								<td class="d-flex justify-content-evenly">
-									<a asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-warning waves-effect waves-light">Assign Developer</a>
-									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									<a asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id" data-bs-toggle="modal" data-bs-target="#AssignDeveloper" type="button" class="btn btn-soft-warning waves-effect waves-light">Assign Developer</a>
+									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" data-bs-toggle="modal" data-bs-target="#TicketsEdit" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
 									<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
 
-                                </td>
+								</td>
 							</tr>
 						}
 					</tbody>
@@ -129,37 +129,100 @@
 }
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AssignDeveloper">
 	Launch static backdrop modal
 </button>
 
 <!-- Modal -->
 @foreach (Ticket ticket in Model)
-						{
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">				
-				<form asp-controller="Tickets" asp-action="AssignDeveloper" method="post" class="d-flex flex-column">
-					<input type="hidden" asp-for="@ticket.Id" />
+{
+	@*Assign Developer Modal*@
+	<div class="modal fade" id="AssignDeveloper" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="AssignDeveloperLabel">Modal title</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-controller="Tickets" asp-action="AssignDeveloper" method="post" class="d-flex flex-column">
+						<input type="hidden" asp-for="@ticket.Id" />
 						<select asp-items="@viewModel.DeveloperList">
 							@*asp-for="@viewModel.DeveloperId"*@
-						<option value="">Unassigned</option>
-					</select>
-					<button type="submit" class="btn btn-primary my-3">Save</button>
-					
-				</form>
-				
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				
+							<option value="">Unassigned</option>
+						</select>
+						<button type="submit" class="btn btn-primary my-3">Save</button>
+
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+
+	@*Edit Tickets Modal*@
+	<div class="modal fade" id="TicketsEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="staticBackdropLabel">Edit Ticket</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="Edit" asp-controller="Tickets" method="post">
+						<input type="hidden" asp-for="@ticket.Id" />
+						<input type="hidden" asp-for="@ticket.Created" />
+						<input type="hidden" asp-for="@ticket.SubmitterUserId" />
+						<input type="hidden" asp-for="@ticket.DeveloperUserId" />
+						<input type="hidden" asp-for="@ticket.ProjectId" />
+						<input type="hidden" asp-for="@ticket.Archived" />
+						<input type="hidden" asp-for="@ticket.ArchivedByProject" />
+						<div class="row g-3 p-2">
+							<div class="col-12 d-flex justify-content-center">
+								<div class="row">
+									<div class="col-12">
+										<label asp-for="@ticket.Title" class="control-label"></label>
+										<input asp-for="@ticket.Title" class="form-control" />
+										<span asp-validation-for="@ticket.Title" class="text-danger"></span>
+									</div>
+									<div class="col-12">
+										<label asp-for="@ticket.Description" class="control-label"></label>
+										<input asp-for="@ticket.Description" class="form-control" />
+										<span asp-validation-for="@ticket.Description" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketTypeId" class="control-label"></label>
+										<select asp-for="@ticket.TicketTypeId" class="form-control" asp-items="@ViewBag.TicketTypeId"></select>
+										<span asp-validation-for="@ticket.TicketTypeId" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketStatusId" class="control-label"></label>
+										<select asp-for="@ticket.TicketStatusId" class="form-control" asp-items="@ViewBag.TicketStatusId"></select>
+										<span asp-validation-for="@ticket.TicketStatusId" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketPriorityId" class="control-label"></label>
+										<select asp-for="@ticket.TicketPriorityId" class="form-control" asp-items="@ViewBag.TicketPriorityId"></select>
+										<span asp-validation-for="@ticket.TicketPriorityId" class="text-danger"></span>
+									</div>
+									<div class="col-12 d-flex justify-content-center mt-2">
+										<button type="submit" class="btn btn-lg btn-primary rounded-pill">Save</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
 }

@@ -7,7 +7,7 @@
 
 <div class="row">
 	<div class="col-sm-4">
-		<a asp-action="Create" asp-controller="Tickets" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Ticket</a>
+		<a data-bs-toggle="modal" data-bs-target="#TicketsCreate" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Ticket</a>
 	</div>
 
 </div>
@@ -124,7 +124,7 @@
 									}
 								</td>
 								<td class="d-flex justify-content-between">
-									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" data-bs-toggle="modal" data-bs-target="#TicketsEdit" class="btn btn-soft-success waves-effect waves-light">Edit</a>
 									<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
 								</td>
 							</tr>
@@ -141,3 +141,137 @@
 		$('#datatable').DataTable();
 	</script>
 }
+
+<!-- Button trigger modal -->
+@*<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#TicketsEdit">
+	Launch static backdrop modal
+</button>*@
+
+<!-- Modal -->
+@foreach (Ticket ticket in Model)
+{
+	<div class="modal fade" id="TicketsEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="staticBackdropLabel">Edit Ticket</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="Edit" asp-controller="Tickets" method="post">
+						<input type="hidden" asp-for="@ticket.Id" />
+						<input type="hidden" asp-for="@ticket.Created" />
+						<input type="hidden" asp-for="@ticket.SubmitterUserId" />
+						<input type="hidden" asp-for="@ticket.DeveloperUserId" />
+						<input type="hidden" asp-for="@ticket.ProjectId" />
+						<input type="hidden" asp-for="@ticket.Archived" />
+						<input type="hidden" asp-for="@ticket.ArchivedByProject" />
+						<div class="row g-3 p-2">
+							<div class="col-12 d-flex justify-content-center">
+								<div class="row">
+									<div class="col-12">
+										<label asp-for="@ticket.Title" class="control-label"></label>
+										<input asp-for="@ticket.Title" class="form-control" />
+										<span asp-validation-for="@ticket.Title" class="text-danger"></span>
+									</div>
+									<div class="col-12">
+										<label asp-for="@ticket.Description" class="control-label"></label>
+										<input asp-for="@ticket.Description" class="form-control" />
+										<span asp-validation-for="@ticket.Description" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketTypeId" class="control-label"></label>
+										<select asp-for="@ticket.TicketTypeId" class="form-control" asp-items="@ViewBag.TicketTypeId"></select>
+										<span asp-validation-for="@ticket.TicketTypeId" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketStatusId" class="control-label"></label>
+										<select asp-for="@ticket.TicketStatusId" class="form-control" asp-items="@ViewBag.TicketStatusId"></select>
+										<span asp-validation-for="@ticket.TicketStatusId" class="text-danger"></span>
+									</div>
+									<div class="col-12 mt-2">
+										<label asp-for="@ticket.TicketPriorityId" class="control-label"></label>
+										<select asp-for="@ticket.TicketPriorityId" class="form-control" asp-items="@ViewBag.TicketPriorityId"></select>
+										<span asp-validation-for="@ticket.TicketPriorityId" class="text-danger"></span>
+									</div>
+									<div class="col-12 d-flex justify-content-center mt-2">
+										<button type="submit" class="btn btn-lg btn-primary rounded-pill">Save</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Button trigger modal -->
+@*<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#TicketsCreate">
+	Launch static backdrop modal
+</button>*@
+
+<!-- Create Ticket Modal -->
+<div class="modal fade" id="TicketsCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="TicketsCreateLabel">Create New Ticket</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Create">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						<label asp-for="@ticket.Title" class="control-label"></label>
+							<input asp-for="@ticket.Title" class="form-control" />
+							<span asp-validation-for="@ticket.Title" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+							<label asp-for="@ticket.Description" class="control-label"></label>
+							<input asp-for="@ticket.Description" class="form-control" />
+							<span asp-validation-for="@ticket.Description" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+							<label asp-for="@ticket.ProjectId" class="control-label"></label>
+							<select asp-for="@ticket.ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
+					</div>
+					<div class="form-group">
+							<label asp-for="@ticket.TicketTypeId" class="control-label"></label>
+							<select asp-for="@ticket.TicketTypeId" class="form-control" asp-items="ViewBag.TicketTypeId"></select>
+					</div>
+					@*            <div class="form-group">
+					<label asp-for="TicketStatusId" class="control-label"></label>
+					<select asp-for="TicketStatusId" class ="form-control" asp-items="ViewBag.TicketStatusId"></select>
+					</div>*@
+					<div class="form-group">
+							<label asp-for="@ticket.TicketPriorityId" class="control-label"></label>
+							<select asp-for="@ticket.TicketPriorityId" class="form-control" asp-items="ViewBag.TicketPriorityId"></select>
+					</div>
+					@*<div class="form-group">
+					<label asp-for="DeveloperUserId" class="control-label"></label>
+					<select asp-for="DeveloperUserId" class ="form-control" asp-items="ViewBag.DeveloperUserId"></select>
+					</div>
+					<div class="form-group">
+					<label asp-for="SubmitterUserId" class="control-label"></label>
+					<select asp-for="SubmitterUserId" class ="form-control" asp-items="ViewBag.SubmitterUserId"></select>
+					</div>*@			
+						<div class="modal-footer">
+							<input type="submit" value="Create" class="btn btn-success" />
+							<input type="submit" value="Close" asp-action="Index" data-bs-dismiss="modal" class="btn btn-secondary" />
+						</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</div>
+<!-- END Create Ticket Modal -->
+}
+
