@@ -35,7 +35,7 @@
 										<span style="color:darkred">Unassigned &nbsp; &nbsp; &nbsp; &nbsp;</span>
 
 
-										<a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-warning rounded-pill"><i class="mdi mdi-plus"></i> Manager</a>
+										<a asp-action="IndexCopy" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-warning rounded-pill"><i class="mdi mdi-plus"></i> Manager</a>
 									}
 									else
 									{
@@ -94,7 +94,7 @@
 						</select>
 						<div class="modal-footer d-flex justify-content-center">
 							<a type="submit" class="btn btn-success my-3">Save</a>
-							<a asp-action="UnassignedProjects" asp-controller="Projects" class="btn btn-secondary">Cancel</a>
+							<a data-bs-dismiss="modal" class="btn btn-secondary">Cancel</a>
 						</div>
 					</form>
 				</div>

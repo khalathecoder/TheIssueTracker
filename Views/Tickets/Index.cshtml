@@ -194,19 +194,16 @@
 										<select asp-for="@ticket.TicketPriorityId" class="form-control" asp-items="@ViewBag.TicketPriorityId"></select>
 										<span asp-validation-for="@ticket.TicketPriorityId" class="text-danger"></span>
 									</div>
-									<div class="col-12 d-flex justify-content-center mt-2">
-										<button type="submit" class="btn btn-lg btn-primary rounded-pill">Save</button>
+									<div class="modal-footer">
+										<a type="submit" class="btn btn-success my-3">Save</a>
+										<a data-bs-dismiss="modal" class="btn btn-secondary">Cancel</a>
 									</div>
 								</div>
 							</div>
 						</div>
 					</form>
 
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-				</div>
+				</div>				
 			</div>
 		</div>
 	</div>
