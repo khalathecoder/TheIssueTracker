@@ -16,7 +16,7 @@
 
 <div class="row">
 	<div class="col-sm-4">
-		<a asp-action="Create" asp-controller="Projects" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Project</a>
+		<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Project</a>
 	</div>
 
 </div>
@@ -140,7 +140,7 @@
 						</div>
 						<div class="modal-footer">
 							<input type="submit" value="Create" class="btn btn-success" />
-							<input type="submit" value="Close" asp-action="Index" data-bs-dismiss="modal" class="btn btn-secondary" />
+							<input type="submit" value="Close" data-bs-dismiss="modal" class="btn btn-secondary" />
 						</div>
 					</form>
 				</div>

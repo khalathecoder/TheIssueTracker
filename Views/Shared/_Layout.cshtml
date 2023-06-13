@@ -384,11 +384,11 @@
 									@if ((User.IsInRole("Admin")) || (User.IsInRole("Project Manager")))
 									{
 										<li>
-											<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate"> Add New Project</a>
+											<a type="submit" data-bs-toggle="modal" data-bs-target="#ProjectsCreate"> Add New Project</a>
 										</li>
 									}
 									<li>
-										<a asp-controller="Projects" asp-action="IndexCopy">All Projects</a>
+										<a asp-controller="Projects" asp-action="Index">All Projects</a>
 									</li>
 									@if (!User.IsInRole("Admin"))
 									{

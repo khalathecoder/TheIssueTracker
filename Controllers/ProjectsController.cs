@@ -12,6 +12,7 @@ using TheIssueTracker.Extensions;
 using TheIssueTracker.Models;
 using TheIssueTracker.Models.Enums;
 using TheIssueTracker.Models.ViewModels;
+using TheIssueTracker.Services;
 using TheIssueTracker.Services.Interfaces;
 
 namespace TheIssueTracker.Controllers
@@ -25,8 +26,9 @@ namespace TheIssueTracker.Controllers
         private readonly IBTProjectService _projectService;
         private readonly IBTTicketService _ticketService;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTCompanyService _companyService;
 
-        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTFileService fileService, IBTProjectService projectService, IBTTicketService ticketService, IBTRolesService rolesService)
+        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTFileService fileService, IBTProjectService projectService, IBTTicketService ticketService, IBTRolesService rolesService, IBTCompanyService companyService)
         {
             _context = context;
             _userManager = userManager;
@@ -34,6 +36,7 @@ namespace TheIssueTracker.Controllers
             _projectService = projectService;
             _ticketService = ticketService;
             _rolesService = rolesService;
+            _companyService = companyService;
         }
 
         // GET: Projects
@@ -318,6 +321,114 @@ namespace TheIssueTracker.Controllers
             return View(await _projectService.GetUnassignedProjectsByCompanyIdAsync(User.Identity!.GetCompanyId()));
         }
 
+        [HttpGet]
+        [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
+        public async Task<IActionResult> AssignProjectMembers(int? id)
+        {
+            if (id is null or 0)
+            {
+                return NotFound();
+            }
+
+            Project? project = await _projectService.GetProjectByIdAsync(id.Value, User.Identity!.GetCompanyId());
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
+            List<BTUser> current = new();
+            List<BTUser> unassigned = new();
+
+            foreach (BTUser member in members)
+            {
+                if (await _rolesService.IsUserInRole(member, nameof(BTRoles.Developer)) || await _rolesService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+                {
+                    if (project.Members.Contains(member))
+                    {
+                        current.Add(member);
+                    }
+                    else
+                    {
+                        unassigned.Add(member);
+                    }
+                }
+            }
+
+            AssignProjectMembersViewModel viewModel = new AssignProjectMembersViewModel()
+            {
+                Project = project,
+                CurrentList = new SelectList(current, "Id", "FullName"),
+                UnassignedList = new SelectList(unassigned, "Id", "FullName")
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignProjectMembers(AssignProjectMembersViewModel viewModel)
+        {
+            if (viewModel.Project?.Id is not null)
+            {
+                Project? project = await _projectService.GetProjectByIdAsync(viewModel.Project.Id, User.Identity!.GetCompanyId());
+
+                if (project == null)
+                {
+                    return BadRequest();
+                }
+
+                List<BTUser> members = await _companyService.GetCompanyMembersAsync(User.Identity!.GetCompanyId());
+
+                if (!string.IsNullOrEmpty(viewModel.MemberId))
+                {
+                    BTUser? member = members.FirstOrDefault(u => u.Id == viewModel.MemberId);
+                    if (member is not null)
+                    {
+                        if (project.Members.Contains(member))
+                        {
+                            await _projectService.RemoveMemberFromProjectAsync(member, project.Id, User.Identity!.GetCompanyId());
+                        }
+                        else
+                        {
+                            await _projectService.AddMemberToProjectAsync(member, project.Id, User.Identity!.GetCompanyId());
+                        }
+
+                    }
+                }
+
+                List<BTUser> current = new();
+                List<BTUser> unassigned = new();
+
+                foreach (BTUser member in members)
+                {
+                    if (await _rolesService.IsUserInRole(member, nameof(BTRoles.Developer)) || await _rolesService.IsUserInRole(member, nameof(BTRoles.Submitter)))
+                    {
+                        if (project.Members.Contains(member))
+                        {
+                            current.Add(member);
+                        }
+                        else
+                        {
+                            unassigned.Add(member);
+                        }
+                    }
+                }
+
+                AssignProjectMembersViewModel newViewModel = new AssignProjectMembersViewModel()
+                {
+                    Project = project,
+                    CurrentList = new SelectList(current, "Id", "FullName"),
+                    UnassignedList = new SelectList(unassigned, "Id", "FullName")
+                };
+
+                return View(newViewModel);
+            }
+
+            return BadRequest();
+        }
         private bool ProjectExists(int id)
         {
           return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();

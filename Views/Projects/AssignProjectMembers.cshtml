@@ -1,0 +1,53 @@
+﻿@model TheIssueTracker.Models.ViewModels.AssignProjectMembersViewModel
+
+@{
+    ViewData["Title"] = "Edit Members";
+}
+
+<div class="d-flex justify-content-center mt-5 flex-column align-items-center">
+    <h3 class="my-5">Edit Members</h3>
+    <h5>@Model.Project!.Name</h5>
+    <div class="row row-cols-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Add Members</div>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignProjectMembers" method="post" class="d-flex flex-column">
+                        <input type="hidden" asp-for="Project!.Id" />
+                        <select asp-items="Model.UnassignedList" asp-for="MemberId">
+                            <option value="">Unassigned</option>
+                        </select>
+                        <button type="submit" class="btn btn-success my-3">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Remove Members</div>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignProjectMembers" method="post" class="d-flex flex-column">
+                        <input type="hidden" asp-for="Project!.Id" />
+                        <select asp-items="Model.CurrentList" asp-for="MemberId">
+                            <option value="">Current Members</option>
+                        </select>
+                        <button type="submit" class="btn btn-warning my-3">Remove</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <a asp-action="Details" asp-route-id="@Model.Project!.Id" class="btn btn-soft-secondary d-flex justify-content-center">Go back to Project Details</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -7,198 +7,159 @@
 
 
 @{
-    ViewData["Title"] = "Details";
+	ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
 
 <div class="p-3 d-flex flex-column">
-    <h1>Project Details</h1>
-    <div class="row g-3 mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex">
-                    @* PROJECT'S STATUS *@
-                    
-                        @if (Model.Archived)
-                        {
-                            <h5>Archived</h5>
-                        }
-                        else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(Model.EndDate, DateTimeKind.Utc).Date)
-                        {
-                            <h5>Overdue</h5>
-                        }
-                        else
-                        {
-                            <h5>In Progress</h5>
-                        }
-                    
-                    @* ONLY SHOW THESE BUTTONS IF THEY'RE ALLOWED TO DO THESE ACTIONS *@
-                    @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-                    {
-                    <div class="ms-auto">
-                        <a class="btn btn-sm btn-secondary" href="#">Edit</a>
-                        <a class="btn btn-sm btn-secondary" href="#">Archive / Restore</a>
-                    </div>
-                    }
-                </div>
-                <div class="card-body">
-                    @* PROJECT NAME GOES HERE *@
-                    <h5 class="card-title">@Model.Name</h5>
-                    <h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date<span> to </span>@Model.EndDate.Date</h6>
-                    <p class="card-text">
-                        @* PROJECT DESCRIPTION GOES HERE *@
-                        @Model.Description
-                    </p>
-                </div>
-                <div class="card-footer fw-bold lead">
-                    Project Manager: @* Either the PM's name or "Unassigned" *@
-                    @if ((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId)) is null)
-                    {
-                        <h5>Unassigned</h5>
-                    }
-                    else
-                    {
-                        <h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        @* DISPLAY LIST OF DEVELOPERS ON PROJECT *@
-                        <div class="card-header">
-                            Developers
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                @foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Developer), Model.CompanyId)))
-                                {
-                                    <li>@user.FullName</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        @* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
-                        <div class="card-header">
-                            Submitters
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                @foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
-                                {
-                                    <li>@user.FullName</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @* Only show the "manage project members" button if they're allowed to assign members to this project *@
-        @if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
-        {
-            <div class="col-12">
-                <div class="d-flex flex-column align-items-stretch align-items-lg-end">
-                    <a href="#" class="btn btn-secondary btn-sm">
-                        Manage Project Members
-                    </a>
-                </div>
-            </div>
-        }
-    </div>
-    <div class="table-responsive mt-4">
-        <table class="table table-hover table-bordered text-center no-wrap" id="ticketTable">
-            @* TICKETS TABLE *@
-            <tr>
-                <td>
-                   @* @foreach (Ticket ticket in Model.Tickets)
-                    {
-                        
-                    }*@
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div class="mt-5 ms-auto">
-        <a asp-action="Index" class="btn btn-dark">Back to List</a>
-    </div>
+
+	<div class="row g-3 mb-3 p-3 border border-2 shadow-lg bg-light">
+		<h1>Project Details</h1>
+		<div class="col-12">
+			<div class="card">
+				<div class="card-header d-flex">
+					@* PROJECT'S STATUS *@
+
+					@if (Model.Archived)
+					{
+						<h5 class="badge bg-secondary">Archived</h5>
+					}
+					else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(Model.EndDate, DateTimeKind.Utc).Date)
+					{
+						<h5 class="badge bg-danger">Overdue</h5>
+					}
+					else
+					{
+						<h5 class="badge bg-info">In Progress</h5>
+					}
+
+					@* ONLY SHOW THESE BUTTONS IF THEY'RE ALLOWED TO DO THESE ACTIONS *@
+					@if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+					{
+						<div class="ms-auto">
+							<a class="btn btn-sm btn-soft-success" href="#">Edit</a>
+							<a class="btn btn-sm btn-soft-secondary" href="#">Archive / Restore</a>
+						</div>
+					}
+				</div>
+				<div class="card-body">
+					@* PROJECT NAME GOES HERE *@
+					<h5 class="card-title">@Model.Name</h5>
+					<h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date<span> to </span>@Model.EndDate.Date</h6>
+					<p class="card-text">
+						@* PROJECT DESCRIPTION GOES HERE *@
+						@Model.Description
+					</p>
+				</div>
+				<div class="card-footer fw-bold lead">
+					Project Manager: @* Either the PM's name or "Unassigned" *@
+					@if ((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId)) is null)
+					{
+						<h5>Unassigned</h5>
+					}
+					else
+					{
+						<h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
+					}
+				</div>
+			</div>
+		</div>
+		<div class="col-12">
+			<div class="row">
+				<div class="col-12 col-lg-6">
+					<div class="card h-100">
+						@* DISPLAY LIST OF DEVELOPERS ON PROJECT *@
+						<div class="card-header">
+							Developers
+						</div>
+						<div class="card-body">
+							<ul>
+								@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Developer), Model.CompanyId)))
+								{
+									<li>@user.FullName</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-lg-6">
+					<div class="card h-100">
+						@* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
+						<div class="card-header">
+							Submitters
+						</div>
+						<div class="card-body">
+							<ul>
+								@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
+								{
+									<li>@user.FullName</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		@* Only show the "manage project members" button if they're allowed to assign members to this project *@
+		@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
+		{
+			<div class="col-12 p-2">
+				<div class="d-flex flex-column align-items-stretch align-items-lg-end">
+					<a asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
+						Manage Project Members
+					</a>
+					<a asp-action="ManageUserRoles" asp-controller="Company" class="btn btn-soft-warning width-lg m-1">
+						Manage Member Roles
+					</a>
+				</div>
+			</div>
+		}
+	</div>
+	@* TICKETS COLLAPSABLE TABLE*@
+	<p>
+		<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+			Link with href
+		</a>
+		<button class="btn btn-primary" type="button" data-toggle="collapse" @*data-target="#collapseExample"*@ aria-expanded="false" aria-controls="collapseExample">
+			Button with data-target
+		</button>
+	</p>
+	<div class="collapse" @*id="collapseExample"*@>
+		<div class="card card-body">
+			Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+		</div>
+	</div>
+
+	@*****Tickets table*@
+	<div class="table-responsive mt-4">
+		<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
+			@foreach (Ticket ticket in Model.Tickets)
+			{
+				<thead>
+					<tr>
+						<th><h5>ID</h5></th>
+						<th><h5>Title</h5></th>
+						<th><h5>Description</h5></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>@ticket.Id</td>
+						<td>@ticket.Title</td>
+						<td>@ticket.Description</td>
+					</tr>
+				</tbody>
+			}
+		</table>
+	</div>
+
+	<div class="mt-5 ms-auto">
+		<a asp-action="Index" class="btn btn-dark">Back to List</a>
+	</div>
 </div>
 
-@*
-<div>
-    <h4>Project</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileData)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileData)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Archived)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Archived)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Company)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Company.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProjectPriority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProjectPriority.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-*@
+@section Scripts{
+	<script>
+		$('#datatable').DataTable();
+	</script>
+}
