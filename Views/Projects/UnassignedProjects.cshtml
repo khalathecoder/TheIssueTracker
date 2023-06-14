@@ -11,21 +11,34 @@
 
 
 @{
-	ViewData["Title"] = "IndexCopy";
+	ViewData["Title"] = "Unassigned Projects";
 }
 
-<div class="row">
-	<div class="col-sm-4">
-		<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate" class="btn btn-purple rounded-pill w-md waves-effect waves-light mb-3"><i class="mdi mdi-plus"></i> Create Project</a>
+
+
+<div class="container-fluid">
+	<div class="row">
+		<h2 class="m-t-0 h3"><b>Unassigned Projects </b></h2>
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="row justify-content-between">
+						<div class="col-md-4">
+							<div class="mt-3 mt-md-0">
+								<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate" class="btn btn-success width-lg w-md waves-effect waves-light"><i class="mdi mdi-plus"></i> Create Project</a>
+							</div>
+						</div><!-- end col-->
+					</div> <!-- end row -->
+				</div>
+			</div> <!-- end card -->
+		</div><!-- end col-->
 	</div>
 
-</div>
-<div class="container mt-4">
 	<div class="row">
 		@foreach (Project project in Model)
 		{
-			<div class="col-auto mb-3">
-				<div class="card" style="width: 18rem; height:100%">
+			<div class="col-xl-4">
+				<div class="card" style="max-width: 30rem">
 					<div class="card-header">
 						<div class="row">
 							<div class="col">
@@ -36,8 +49,29 @@
 						</div>
 					</div>
 					<div class="card-body">
-						<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-center">@project.Name</h5></a>
-						<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><p class="text-center">@project.Description</p></a>
+						<div class="text-center">
+							<span class="text-muted">Priority Level: </span> @if (project.ProjectPriority!.Name == "Urgent")
+							{
+								<h5 style="color:firebrick">Urgent</h5>
+							}
+							else if (project.ProjectPriority!.Name == "High")
+							{
+								<h5 style="color:orangered">High</h5>
+
+							}
+							else if (project.ProjectPriority!.Name == "Medium")
+							{
+								<h5 style="color:darkslateblue">Medium</h5>
+							}
+							else if (project.ProjectPriority!.Name == "Low")
+							{
+								<h5 style="color:forestgreen">Low</h5>
+							}
+						</div>
+						<div><a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-center">@project.Name</h5></a></div>
+						<div class="text-truncate">
+							<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><p class="text-center">@project.Description</p></a>
+						</div>
 					</div>
 
 					<div class="card-footer">

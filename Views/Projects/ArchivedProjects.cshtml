@@ -3,74 +3,81 @@
 @using TheIssueTracker.Models.Enums;
 @using TheIssueTracker.Services.Interfaces;
 @inject IBTFileService _FileService
+@inject IBTProjectService _ProjectService;
+@inject IBTRolesService _RolesService;
 
-<h2>Archived Projects</h2>
+@{
+	ViewData["Title"] = "Archived Projects";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                <span>Image</span>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Archived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectPriority)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    <img style="width: 200px; height: 200px;" src="@_FileService.ConvertByteArrayToFile(item.ImageFileData,item.ImageFileType,DefaultImage.ProjectImage)" class="square-img rounded-start">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Archived)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
-                    <a asp-action="AssignPM" asp-route-id="@item.Id">Assign PM</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container-fluid">
+	<div class="row">
+		<h2 class="m-t-0 h3"><b>Archived Projects </b></h2>
+	</div>
+	<div class="row">
+		@foreach (Project project in Model)
+		{
+			<div class="col-xl-4">
+				<div class="card" style="max-width: 30rem">
+					<div class="card-header">
+						<div class="row">
+							<div class="col">
+								<h5 style="color:darkred">
+									@if ((await _ProjectService.GetProjectManagerAsync(project.Id, project.CompanyId)) == null)
+									{
+										<div class="row row-cols-2">
+											<div class="col d-flex align-items-center" style="color:darkgray">Archived</div>
+											<div class="col text-end"><a asp-action="IndexCopy" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-success .width-xl rounded-pill">Restore</a></div>
+										</div>
+									}
+									else
+									{
+										@await _ProjectService.GetProjectManagerAsync(project.Id, project.CompanyId)
+										;
+										<h6 class="text-muted">Project Manager</h6>
+									}
+								</h5>
+							</div>
+						</div>
+
+					</div>
+					<div class="card-body">
+						<div class="text-center">
+							<span class="text-muted">Priority Level: </span> @if (project.ProjectPriority!.Name == "Urgent")
+							{
+								<h5 style="color:firebrick">Urgent</h5>
+							}
+							else if (project.ProjectPriority!.Name == "High")
+							{
+								<h5 style="color:orangered">High</h5>
+
+							}
+							else if (project.ProjectPriority!.Name == "Medium")
+							{
+								<h5 style="color:darkslateblue">Medium</h5>
+							}
+							else if (project.ProjectPriority!.Name == "Low")
+							{
+								<h5 style="color:forestgreen">Low</h5>
+							}
+						</div>
+						<div><a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-center">@project.Name</h5></a></div>
+						<div class="text-truncate">
+							<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><p class="text-center">@project.Description</p></a>
+						</div>
+					</div>
+					<div class="card-footer">
+						<div class="row row-cols-2">
+							<div class="col">
+								Developers:
+							</div>
+							<div class="col">
+								Submitters:
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
