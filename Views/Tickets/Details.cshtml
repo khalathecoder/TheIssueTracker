@@ -103,7 +103,7 @@
 					<a href="#"><span class="add-new-plus"><i class="mdi mdi-plus"></i> </span></a>*@
 					</div>
 				}
-
+				<hr />
 				<div class="clearfix"></div>
 
 				@*Ticket Attachments*@
@@ -114,7 +114,8 @@
 							<input type="hidden" asp-for="@Model.Id" name="TicketId">
 							<div class="media-body ml-3">
 								<label>
-									Description
+
+									<h5 class="text-muted">File Description:</h5>
 									<input asp-for="@Model.TicketAttachments.FirstOrDefault()!.Description" type="text" class="form-control" />
 								</label><br />
 								<label class="btn btn-outline-primary btn-sm">
