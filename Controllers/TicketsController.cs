@@ -432,7 +432,38 @@ namespace TheIssueTracker.Controllers
 
         }
 
-        private bool TicketExists(int id)
+        [HttpGet]
+		public async Task<IActionResult> Restore(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var ticket = await _ticketService.GetTicketByIdAsync(id.Value, User.Identity!.GetCompanyId());
+			if (ticket == null || ticket.ArchivedByProject)
+			{
+				return NotFound();
+			}
+
+			return View(ticket);
+		}
+
+		// POST: Tickets/Delete/5
+		[HttpPost, ActionName("Restore")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> RestoreConfirmed(int id)
+		{
+			var ticket = await _ticketService.GetTicketByIdAsync(id, User.Identity!.GetCompanyId());
+			if (ticket != null && !ticket.ArchivedByProject)
+			{
+				await _ticketService.RestoreTicketAsync(ticket, User.Identity!.GetCompanyId());
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		private bool TicketExists(int id)
         {
           return (_context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
         }

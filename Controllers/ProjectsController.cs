@@ -429,7 +429,42 @@ namespace TheIssueTracker.Controllers
 
             return BadRequest();
         }
-        private bool ProjectExists(int id)
+
+        [HttpGet]
+		[Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
+		public async Task<IActionResult> Restore(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var project = await _projectService.GetProjectByIdAsync(id.Value, User.Identity!.GetCompanyId());
+
+			if (project == null)
+			{
+				return NotFound();
+			}
+
+			return View(project);
+		}
+
+		// POST: Projects/Delete/5
+		[HttpPost, ActionName("Restore")]
+		[ValidateAntiForgeryToken]
+		[Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")]
+		public async Task<IActionResult> RestoreConfirmed(int id)
+		{
+			var project = await _projectService.GetProjectByIdAsync(id, User.Identity!.GetCompanyId());
+			if (project != null)
+			{
+				await _projectService.RestoreProjectAsync(project, User.Identity!.GetCompanyId());
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		private bool ProjectExists(int id)
         {
           return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
         }

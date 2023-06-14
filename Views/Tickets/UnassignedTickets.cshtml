@@ -6,10 +6,25 @@
 }
 
 @{
-	ViewData["Title"] = "Index";
+	ViewData["Title"] = "Unassigned Tickets";
 }
 
 
+<div class="row">
+	<h2 class="m-t-0 h3"><b>Unassigned Tickets </b></h2>
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="row justify-content-between">
+					<div class="col-md-4">
+						<div class="mt-3 mt-md-0">
+							<a data-bs-toggle="modal" data-bs-target="#TicketsCreate" class="btn btn-success width-lg w-md waves-effect waves-light"><i class="mdi mdi-plus"></i> Create Ticket</a>
+						</div>
+					</div><!-- end col-->
+				</div> <!-- end row -->
+			</div>
+		</div> <!-- end card -->
+	</div><!-- end col-->
 </div>
 <div class="row">
 	<div class="col-12">
@@ -23,7 +38,6 @@
 							<th>ID</th>
 							<th>Description</th>
 							<th>Project</th>
-							<th>Submitter</th>
 							<th>Priority</th>
 							<th>Status</th>
 							<th>Type</th>
@@ -43,7 +57,6 @@
 								<td>
 									<a asp-controller="Projects" asp-action="Details" asp-route-id="@ticket.Project.Id">@ticket.Project!.Name</a>
 								</td>
-								<td>@ticket.SubmitterUser!.FullName</td>
 								<td>
 									@if (ticket.TicketPriority!.Name == "Urgent")
 									{
@@ -224,4 +237,61 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Create Ticket Modal -->
+	<div class="modal fade" id="TicketsCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="TicketsCreateLabel">Create New Ticket</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="Create">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="form-group">
+							<label asp-for="@ticket.Title" class="control-label"></label>
+							<input asp-for="@ticket.Title" class="form-control" />
+							<span asp-validation-for="@ticket.Title" class="text-danger"></span>
+						</div>
+						<div class="form-group">
+							<label asp-for="@ticket.Description" class="control-label"></label>
+							<input asp-for="@ticket.Description" class="form-control" />
+							<span asp-validation-for="@ticket.Description" class="text-danger"></span>
+						</div>
+						<div class="form-group">
+							<label asp-for="@ticket.ProjectId" class="control-label"></label>
+							<select asp-for="@ticket.ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
+						</div>
+						<div class="form-group">
+							<label asp-for="@ticket.TicketTypeId" class="control-label"></label>
+							<select asp-for="@ticket.TicketTypeId" class="form-control" asp-items="ViewBag.TicketTypeId"></select>
+						</div>
+						@*            <div class="form-group">
+					<label asp-for="TicketStatusId" class="control-label"></label>
+					<select asp-for="TicketStatusId" class ="form-control" asp-items="ViewBag.TicketStatusId"></select>
+					</div>*@
+						<div class="form-group">
+							<label asp-for="@ticket.TicketPriorityId" class="control-label"></label>
+							<select asp-for="@ticket.TicketPriorityId" class="form-control" asp-items="ViewBag.TicketPriorityId"></select>
+						</div>
+						@*<div class="form-group">
+					<label asp-for="DeveloperUserId" class="control-label"></label>
+					<select asp-for="DeveloperUserId" class ="form-control" asp-items="ViewBag.DeveloperUserId"></select>
+					</div>
+					<div class="form-group">
+					<label asp-for="SubmitterUserId" class="control-label"></label>
+					<select asp-for="SubmitterUserId" class ="form-control" asp-items="ViewBag.SubmitterUserId"></select>
+					</div>*@
+						<div class="modal-footer">
+							<input type="submit" value="Create" class="btn btn-success" />
+							<input type="submit" value="Close" asp-action="Index" data-bs-dismiss="modal" class="btn btn-secondary" />
+						</div>
+					</form>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- END Create Ticket Modal -->
 }

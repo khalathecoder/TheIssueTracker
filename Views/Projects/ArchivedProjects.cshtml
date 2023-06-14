@@ -27,7 +27,7 @@
 									{
 										<div class="row row-cols-2">
 											<div class="col d-flex align-items-center" style="color:darkgray">Archived</div>
-											<div class="col text-end"><a asp-action="IndexCopy" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-success .width-xl rounded-pill">Restore</a></div>
+											<div class="col text-end"><a asp-action="Restore" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-soft-success .width-xl rounded-pill">Restore</a></div>
 										</div>
 									}
 									else

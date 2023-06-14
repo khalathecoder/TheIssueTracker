@@ -3,78 +3,219 @@
 @using TheIssueTracker.Models.Enums;
 @using TheIssueTracker.Services.Interfaces;
 @inject IBTFileService _FileService
+@inject IBTProjectService _ProjectService;
+@inject IBTRolesService _RolesService;
 
 @{
-    ViewData["Title"] = "My Projects";
+	ViewData["Title"] = "My Projects";
 }
 
-<h2>My Projects</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                <span>Image</span>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Archived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectPriority)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    <img style="width: 200px; height: 200px;" src="@_FileService.ConvertByteArrayToFile(item.ImageFileData,item.ImageFileType,DefaultImage.ProjectImage)" class="square-img rounded-start">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Archived)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
-                    <a asp-action="AssignPM" asp-route-id="@item.Id">Assign PM</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container-fluid">
+
+	<div class="row">
+		<h2 class="m-t-0 h3"><b>My Projects </b></h2>
+		@if (User.IsInRole("ProjectManager"))
+		{
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<div class="row justify-content-between">
+							<div class="col-md-4">
+								<div class="mt-3 mt-md-0">
+									<a data-bs-toggle="modal" data-bs-target="#ProjectsCreate" class="btn btn-success width-lg w-md waves-effect waves-light"><i class="mdi mdi-plus"></i> Create Project</a>
+								</div>
+							</div><!-- end col-->
+						</div> <!-- end row -->
+					</div>
+				</div> <!-- end card -->
+			</div><!-- end col-->
+		}
+	</div>
+
+
+	<div class="row">
+		@foreach (Project project in Model)
+		{
+			<div class="col-xl-4">
+				<div class="card" style="max-width: 30rem">
+					<div class="card-header">
+						<div class="row">
+							<div class="col">
+								<h5 style="color:darkred">
+									@if ((await _ProjectService.GetProjectManagerAsync(project.Id, project.CompanyId)) == null)
+									{
+										<div class="row row-cols-2">
+											<div class="col d-flex align-items-center" style="color:darkred">Unassigned</div>
+											<div class="col text-end"><a asp-action="IndexCopy" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-warning .width-lg rounded-pill"><i class="mdi mdi-plus"></i> Manager</a></div>
+										</div>
+									}
+									else
+									{
+										@await _ProjectService.GetProjectManagerAsync(project.Id, project.CompanyId)
+										;
+										<h6 class="text-muted">Project Manager</h6>
+									}
+								</h5>
+							</div>
+						</div>
+
+					</div>
+					<div class="card-body">
+						<div class="text-center">
+							<span class="text-muted">Priority Level: </span> @if (project.ProjectPriority!.Name == "Urgent")
+							{
+								<h5 style="color:firebrick">Urgent</h5>
+							}
+							else if (project.ProjectPriority!.Name == "High")
+							{
+								<h5 style="color:orangered">High</h5>
+
+							}
+							else if (project.ProjectPriority!.Name == "Medium")
+							{
+								<h5 style="color:darkslateblue">Medium</h5>
+							}
+							else if (project.ProjectPriority!.Name == "Low")
+							{
+								<h5 style="color:forestgreen">Low</h5>
+							}
+						</div>
+						<div><a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-center">@project.Name</h5></a></div>
+						<div class="text-truncate">
+							<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><p class="text-center">@project.Description</p></a>
+						</div>
+					</div>
+					<div class="card-footer">
+						<div class="row row-cols-2">
+							<div class="col">
+								Developers:
+							</div>
+							<div class="col">
+								Submitters:
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+
+@*MODALS*@
+@foreach (Project project in Model)
+{
+	<!-- Button trigger modal -->
+	@*<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AssignPM">
+	Launch demo modal
+</button>
+*@
+	<!-- Modal -->
+	@*Assign PM Modal*@
+	<div class="modal fade" id="AssignPM" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="AssignPMLabel">Assign Project Manager to Project</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="AssignPM" method="post" class="d-flex flex-column">
+						<input type="hidden" @*asp-for="@Model.Id"*@ />
+						<select class="form-control" @*asp-items="@Model.PMList" asp-for="@Id"*@>
+							<option value="">Unassigned</option>
+						</select>
+						<div class="modal-footer d-flex justify-content-center">
+							<a type="submit" class="btn btn-success my-3">Save</a>
+							<a data-bs-dismiss="modal" class="btn btn-secondary">Cancel</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Button trigger modal -->
+	@*	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ProjectsCreate">
+		Launch static backdrop modal
+	</button>*@
+
+
+
+	<!-- CREATE PROJECT Modal -->
+	<div class="modal fade" id="ProjectsCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="ProjectsCreateLabel">Create New Project</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="Create" enctype="multipart/form-data">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="row">
+							<div class="col-12 col-lg-4">
+								<div class="form-group">
+									<label asp-for="@project.ImageFormFile" class="control-label">Project Image</label>
+									<img class="img-fluid border rounded-3 mb-2" style="max-height: 350px;" src="@_FileService.ConvertByteArrayToFile(project.ImageFileData,project.ImageFileType,DefaultImage.ProjectImage)" id="blogImage">
+									<input asp-for="@project.ImageFormFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
+										   onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
+								</div>
+								<div class="form-group">
+									<label asp-for="@project.Name" class="control-label"></label>
+									<input asp-for="@project.Name" class="form-control" />
+									<span asp-validation-for="@project.Name" class="text-danger"></span>
+								</div>
+								<div class="form-group">
+									<label asp-for="@project.StartDate" class="control-label"></label>
+									<input asp-for="@project.StartDate" class="form-control" />
+									<span asp-validation-for="@project.StartDate" class="text-danger"></span>
+								</div>
+								<div class="form-group">
+									<label asp-for="@project.EndDate" class="control-label"></label>
+									<input asp-for="@project.EndDate" class="form-control" />
+									<span asp-validation-for="@project.EndDate" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="col-12 col-lg-8">
+								<div class="form-group">
+									<label asp-for="@project.Description" class="control-label"></label>
+									<textarea asp-for="@project.Description" class="editor form-control"></textarea>
+									<span asp-validation-for="@project.Description" class="text-danger"></span>
+								</div>
+								<div class="form-group" id="tagContainer">
+									<label asp-for="@project.ProjectPriorityId" class="control-label">Project Priority</label>
+									<select asp-for="@project.ProjectPriorityId" class="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" value="Create" class="btn btn-success" />
+							<input type="submit" value="Close" asp-action="Index" data-bs-dismiss="modal" class="btn btn-secondary" />
+						</div>
+					</form>
+				</div>
+
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<!--CK Editor-->
+	<script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
+
+	<script>
+		ClassicEditor
+			.create(document.querySelector('.editor'), {
+				licenseKey: '',
+			})
+			.then(editor => {
+				window.editor = editor;
+			});
+	</script>
+}
