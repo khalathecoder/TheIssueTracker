@@ -10,7 +10,7 @@
             <div class="card-title">@Model.Project!.Name</div>
         </div>
         <div class="card-body">
-            <form asp-action="AssignPM" method="post" class="d-flex flex-column">
+            <form asp-action="AssignPM" asp-controller="Projects" method="post" class="d-flex flex-column">
                 <input type="hidden" asp-for="Project!.Id" />
                 <select asp-items="Model.PMList" asp-for="PMId">
                     <option value="">Unassigned</option>

@@ -1,9 +1,21 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity;
+@using TheIssueTracker.Services.Interfaces
+@using TheIssueTracker.Models.Enums
+
+@inject UserManager<BTUser> UserManager;
+@inject IBTFileService _FileService;
+
+@{	
+	@* Instantiate the btUser *@
+	BTUser? user = await UserManager.GetUserAsync(User);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - TheIssueTracker</title>
+	<title>@ViewData["Title"] - Tracker Boss</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
 	<!-- third party css -->
@@ -68,7 +80,7 @@
 									<!-- item-->
 									<a href="javascript:void(0);" class="dropdown-item notify-item">
 										<div class="d-flex align-items-start">
-											<img class="d-flex me-2 rounded-circle" src="assets/images/users/user-2.jpg" alt="Generic placeholder image" height="32">
+											<img class="d-flex me-2 rounded-circle" src="~/assets/images/users/user-2.jpg" alt="Generic placeholder image" height="32">
 											<div class="w-100">
 												<h5 class="m-0 font-14">Erwin E. Brown</h5>
 												<span class="font-12 mb-0">UI Designer</span>
@@ -79,7 +91,7 @@
 									<!-- item-->
 									<a href="javascript:void(0);" class="dropdown-item notify-item">
 										<div class="d-flex align-items-start">
-											<img class="d-flex me-2 rounded-circle" src="assets/images/users/user-5.jpg" alt="Generic placeholder image" height="32">
+											<img class="d-flex me-2 rounded-circle" src="~/assets/images/users/user-5.jpg" alt="Generic placeholder image" height="32">
 											<div class="w-100">
 												<h5 class="m-0 font-14">Jacob Deo</h5>
 												<span class="font-12 mb-0">Developer</span>
@@ -149,7 +161,7 @@
 							<!-- item-->
 							<a href="javascript:void(0);" class="dropdown-item notify-item">
 								<div class="notify-icon">
-									<img src="assets/images/users/user-4.jpg" class="img-fluid rounded-circle" alt="" />
+									<img src="~/assets/images/users/user-4.jpg" class="img-fluid rounded-circle" alt="" />
 								</div>
 								<p class="notify-details">Karen Robinson</p>
 								<p class="text-muted mb-0 user-msg">
@@ -268,7 +280,7 @@
 				</li>
 				@*Title*@
 				<li>
-					<h4 class="page-title-main">The Issue Tracker</h4>
+					<h4 class="page-title-main">Tracker Boss</h4>
 				</li>
 
 			</ul>
@@ -285,9 +297,9 @@
 				<!-- User box -->
 				<div class="user-box text-center">
 
-					<img src="assets/images/users/user-1.jpg" alt="user-img" title="Mat Helme" class="rounded-circle img-thumbnail avatar-md">
+					<img src="@_FileService.ConvertByteArrayToFile(user!.ImageFileData,user!.ImageFileType,DefaultImage.BTUserImage)" alt="user-img" title="@user.FullName" class="rounded-circle img-thumbnail avatar-md">
 					<div class="dropdown">
-						<a href="#" class="user-name dropdown-toggle h5 mt-2 mb-1 d-block" data-bs-toggle="dropdown" aria-expanded="false">Name Name</a>
+						<a href="#" class="user-name dropdown-toggle h5 mt-2 mb-1 d-block" data-bs-toggle="dropdown" aria-expanded="false">@user.FullName</a>
 						<div class="dropdown-menu user-pro-dropdown">
 
 							<!-- item-->
@@ -317,7 +329,7 @@
 						</div>
 					</div>
 
-					<p class="text-muted left-user-info">Admin Head</p>
+					@*<p class="text-muted left-user-info">Admin Head</p>*@
 
 					<ul class="list-inline">
 						<li class="list-inline-item">
@@ -327,7 +339,7 @@
 						</li>
 
 						<li class="list-inline-item">
-							<a href="#">
+							<a href="/Identity/Account/Login.html">
 								<i class="mdi mdi-power"></i>
 							</a>
 						</li>
@@ -381,7 +393,7 @@
 							</a>
 							<div class="collapse" id="sidebarTasks">
 								<ul class="nav-second-level">
-									@if ((User.IsInRole("Admin")) || (User.IsInRole("Project Manager")))
+									@if ((User.IsInRole("Admin")) || (User.IsInRole("ProjectManager")))
 									{
 										<li>
 											<a type="submit" data-bs-toggle="modal" data-bs-target="#ProjectsCreate"> Add New Project</a>
@@ -436,13 +448,6 @@
 									</li>
 								</ul>
 							</div>
-						</li>
-						<li>
-							<a asp-controller="Notifications" asp-action="Index">
-								<i class="mdi mdi-view-dashboard-outline"></i>
-								<span class="badge bg-success rounded-pill float-end">9+</span>
-								<span> Notifications </span>
-							</a>
 						</li>
 					</ul>
 					<partial name="_LoginPartial" />

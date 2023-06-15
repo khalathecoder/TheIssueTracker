@@ -43,8 +43,12 @@ namespace TheIssueTracker.Controllers
         public async Task<IActionResult> Index()
         {
   
-            List<Project> projects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());       
-            return View(projects);
+            List<Project> projects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+
+			List<ProjectPriority> priorities = await _projectService.GetProjectPrioritiesAsync();
+			ViewData["ProjectPriorityId"] = new SelectList(priorities, "Id", "Name");
+
+			return View(projects);
         }
 
 		public async Task<IActionResult> IndexCopy()
@@ -87,22 +91,22 @@ namespace TheIssueTracker.Controllers
         [HttpPost]
         [Authorize(Roles = nameof(BTRoles.Admin))]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignPM(AssignPMViewModel viewModel)
+        public async Task<IActionResult> AssignPM(AssignPMViewModel assignPMViewModel)
         {
-            if (viewModel.Project?.Id is not null)
+            if (assignPMViewModel.Project?.Id is not null)
             {
                 //if unassigned is selected, remove the PM
-                if(string.IsNullOrEmpty(viewModel.PMId))
+                if(string.IsNullOrEmpty(assignPMViewModel.PMId))
                 {
-                    await _projectService.RemoveProjectManagerAsync(viewModel.Project.Id, User.Identity!.GetCompanyId());
+                    await _projectService.RemoveProjectManagerAsync(assignPMViewModel.Project.Id, User.Identity!.GetCompanyId());
                 }
                 else  //else, add project manager
                 {
                    
-                    await _projectService.AddProjectManagerAsync(viewModel.PMId, viewModel.Project.Id, User.Identity!.GetCompanyId());
+                    await _projectService.AddProjectManagerAsync(assignPMViewModel.PMId, assignPMViewModel.Project.Id, User.Identity!.GetCompanyId());
                 }
 
-                return RedirectToAction(nameof(Details), new {id = viewModel.Project!.Id});
+                return RedirectToAction(nameof(Details), new {id = assignPMViewModel.Project!.Id});
             }
 
             return BadRequest();
@@ -149,41 +153,41 @@ namespace TheIssueTracker.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{nameof(BTRoles.Admin)}, {nameof(BTRoles.ProjectManager)}")] //using Enums class
-        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFormFile")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFormFile")] Project newProject)
         {
             ModelState.Remove("CompanyId");
             if (ModelState.IsValid)
             {
                 BTUser? user = await _userManager.GetUserAsync(User);
                 int companyId = User.Identity!.GetCompanyId();
-                project.CompanyId = companyId;
+				newProject.CompanyId = companyId;
 
-                //Dates
-                project.Created = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
-                project.StartDate = DateTime.SpecifyKind(project.StartDate, DateTimeKind.Utc);
-                project.EndDate = DateTime.SpecifyKind(project.EndDate, DateTimeKind.Utc);
+				//Dates
+				newProject.Created = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
+				newProject.StartDate = DateTime.SpecifyKind(newProject.StartDate, DateTimeKind.Utc);
+				newProject.EndDate = DateTime.SpecifyKind(newProject.EndDate, DateTimeKind.Utc);
 
                 //Images   
-                if (project.ImageFormFile != null)
+                if (newProject.ImageFormFile != null)
                 {
-                    project.ImageFileData = await _fileService.ConvertFileToByteArrayAsync(project.ImageFormFile);
-                    project.ImageFileType = project.ImageFormFile.ContentType;
+					newProject.ImageFileData = await _fileService.ConvertFileToByteArrayAsync(newProject.ImageFormFile);
+                    newProject.ImageFileType = newProject.ImageFormFile.ContentType;
                 }
 
                 //If user has role of project manager, add user
                 if (User.IsInRole(nameof(BTRoles.ProjectManager)))
                 {
-                    project.Members.Add(user);
+					newProject.Members.Add(user);
                 }
 
-                await _projectService.AddProjectAsync(project);
+                await _projectService.AddProjectAsync(newProject);
                 return RedirectToAction(nameof(Index));
             }
 
             List<ProjectPriority> priorities = await _projectService.GetProjectPrioritiesAsync();
             ViewData["ProjectPriorityId"] = new SelectList(priorities, "Id", "Name");
 
-            return View(project);
+            return View(newProject);
         }
 
 

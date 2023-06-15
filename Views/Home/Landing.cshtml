@@ -1,4 +1,5 @@
 ﻿@{
+    
     Layout = null;
 }
 
@@ -6,14 +7,18 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Adminto - Responsive Bootstrap 4 Landing Page Template</title>
+    <title>Tracker Boss</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="A fully featured tracker that can be used for your business needs." name="description" />
     <meta content="Coderthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="~/Landing/images/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="~/Landing/css/bootstrap.min.css" type="text/css">
@@ -38,8 +43,8 @@
         <div class="container-fluid">
             <!-- LOGO -->
             <a class="logo text-uppercase" href="index.html">
-                <img src="~/Landing/images/logo-light.png" alt="" class="logo-light" height="18" />
-                <img src="~/Landing/images/logo-dark.png" alt="" class="logo-dark" height="18" />
+                <img src="~/Landing/images/Tracker_white.png" alt="" class="logo-light" height="18" />
+                <img src="~/Landing/images/Tracker_black.png" alt="" class="logo-dark" height="18" />
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,11 +80,11 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-sm-6">
                             <div class="home-title">
-                                <h5 class="mb-3 text-white-50">Discover Adminto Today</h5>
-                                <h2 class="mb-4 text-white">Make your Site Amazing & Unique with Adminto</h2>
-                                <p class="text-white-50 home-desc font-16 mb-5">Adminto is a fully featured premium Landing template built on top of awesome Bootstrap 4.3.1, modern web technology HTML5, CSS3 and jQuery. </p>
+                                <h5 class="mb-3 text-white-50">Discover Tracker Boss Today</h5>
+                                <h2 class="mb-4 text-white">Organization is the key to success.</h2>
+                                <p class="text-white-50 home-desc font-16 mb-5">Tracker Boss is a fully featured ticket tracking system designed to manage all of your company projects and team members in one place. </p>
                                 <div class="watch-video mt-5">
-                                    <a href="#" class="btn btn-custom me-4">Get Started <i class="mdi mdi-chevron-right ms-1"></i></a>
+                                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-custom me-4">Get Started <i class="mdi mdi-chevron-right ms-1"></i></a>
                                     <a href="http://vimeo.com/99025203" class="video-play-icon text-white"><i class="mdi mdi-play play-icon-circle me-2"></i> <span>Watch The Video</span></a>
                                 </div>
 
@@ -87,7 +92,7 @@
                         </div>
                         <div class="col-lg-5 offset-lg-1 col-sm-6">
                             <div class="home-img mo-mt-20">
-                                <img src="images/home-img.png" alt="" class="img-fluid mx-auto d-block">
+                                <img src="~/Landing/images/home-img.png" alt="" class="img-fluid mx-auto d-block">
                             </div>
                         </div>
                     </div>
@@ -113,7 +118,7 @@
                                     </div>
                                     <div class="d-none d-lg-block me-4">
                                         <h5 class="tab-title">Quality Code</h5>
-                                        <p>At vero eos et accusam et</p>
+                                        <p>C# and .NET at its best.</p>
                                     </div>
                                 </div>
                             </a>
@@ -125,8 +130,8 @@
                                         <h1><i class="pe-7s-edit tab-icon"></i></h1>
                                     </div>
                                     <div class="d-none d-lg-block me-4">
-                                        <h5 class="tab-title">Easy to customize</h5>
-                                        <p>Sed ut unde iste error sit</p>
+                                        <h5 class="tab-title">Simple to Use</h5>
+                                        <p>Streamlined Tracking that is Effortless.</p>
                                     </div>
                                 </div>
                             </a>
@@ -137,8 +142,8 @@
                                     <h1><i class="pe-7s-headphones tab-icon"></i></h1>
                                 </div>
                                 <div class="d-none d-lg-block me-4">
-                                    <h5 class="tab-title">Awesome Support</h5>
-                                    <p>It will be as simple as fact</p>
+                                    <h5 class="tab-title">Fully Functional </h5>
+                                    <p>Efficiency Perfected.</p>
                                 </div>
                             </a>
                         </li>
@@ -268,7 +273,7 @@
     </section>
     <!-- features end -->
     <!-- Demo start -->
-    <section class="section" id="demo">
+    <section class="section" id="demo">      
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-lg-6">
@@ -280,12 +285,12 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-sm-6">
+                <div class="col-lg-6 col-sm-6">
                     <div class="demo-box text-center p-3 mt-4">
                         <a href="#" class="text-dark">
                             <div class="position-relative demo-content">
                                 <div class="demo-img">
-                                    <img src="images/demo/demo-1.jpg" alt="" class="img-fluid mx-auto d-block rounded">
+                                    <img src="~/Landing/images/demo/demo-1.jpg" alt="" class="img-fluid mx-auto d-block rounded">
                                 </div>
                                 <div class="demo-overlay">
                                     <div class="overlay-icon">
@@ -299,12 +304,12 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-6">
+                <div class="col-lg-6 col-sm-6">
                     <div class="demo-box text-center p-3 mt-4">
                         <a href="#" class="text-dark">
                             <div class="position-relative demo-content">
                                 <div class="demo-img">
-                                    <img src="images/demo/demo-2.jpg" alt="" class="img-fluid mx-auto d-block rounded">
+                                    <img src="~/Landing/images/demo/demo-2.jpg" alt="" class="img-fluid mx-auto d-block rounded">
                                 </div>
                                 <div class="demo-overlay">
                                     <div class="overlay-icon">
@@ -318,12 +323,12 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-6">
+                <div class="col-lg-6 col-sm-6">
                     <div class="demo-box text-center p-3 mt-4">
                         <a href="#" class="text-dark">
                             <div class="position-relative demo-content">
                                 <div class="demo-img">
-                                    <img src="images/demo/demo-3.jpg" alt="" class="img-fluid mx-auto d-block rounded">
+                                    <img src="~/Landing/images/demo/demo-3.jpg" alt="" class="img-fluid mx-auto d-block rounded">
                                 </div>
                                 <div class="demo-overlay">
                                     <div class="overlay-icon">
@@ -337,12 +342,13 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-6">
+                <div class="col-lg-6 col-sm-6">
                     <div class="demo-box text-center p-3 mt-4">
                         <a href="#" class="text-dark">
                             <div class="position-relative demo-content">
                                 <div class="demo-img">
-                                    <img src="images/demo/demo-4.jpg" alt="" class="img-fluid mx-auto d-block rounded">
+                                    <img src="~/Landing/images/demo/demo-4.jpg" alt="" class="img-fluid mx-auto d-block rounded">
+                                    
                                 </div>
                                 <div class="demo-overlay">
                                     <div class="overlay-icon">
@@ -352,44 +358,7 @@
                             </div>
                             <div class="mt-3">
                                 <h5 class="font-18">Semi Dark Horizontal</h5>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="demo-box text-center p-3 mt-4">
-                        <a href="#" class="text-dark">
-                            <div class="position-relative demo-content">
-                                <div class="demo-img">
-                                    <img src="images/demo/demo-5.jpg" alt="" class="img-fluid mx-auto d-block rounded">
-                                </div>
-                                <div class="demo-overlay">
-                                    <div class="overlay-icon">
-                                        <i class="pe-7s-expand1 h1 text-white"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <h5 class="font-18">Landing Page</h5>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="demo-box text-center p-3 mt-4">
-                        <a href="#" class="text-dark">
-                            <div class="position-relative demo-content">
-                                <div class="demo-img">
-                                    <img src="images/demo/demo-6.jpg" alt="" class="img-fluid mx-auto d-block rounded">
-                                </div>
-                                <div class="demo-overlay">
-                                    <div class="overlay-icon">
-                                        <i class="pe-7s-expand1 h1 text-white"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <h5 class="font-18">Dark Sidebar</h5>
+                                <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoAdminEmail">Demo Admin</button>
                             </div>
                         </a>
                     </div>

@@ -37,15 +37,15 @@
 					@if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
 					{
 						<div class="ms-auto">
-							<a class="btn btn-sm btn-soft-success" href="#">Edit</a>
-							<a class="btn btn-sm btn-soft-secondary" href="#">Archive / Restore</a>
+							<a class="btn btn-sm btn-soft-success" asp-controller="Projects" asp-action="Edit">Edit</a>
+							<a class="btn btn-sm btn-soft-secondary" asp-controller="Projects" asp-action="Archive">Archive</a>
 						</div>
 					}
 				</div>
 				<div class="card-body">
 					@* PROJECT NAME GOES HERE *@
 					<h5 class="card-title">@Model.Name</h5>
-					<h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date<span> to </span>@Model.EndDate.Date</h6>
+					<h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date.ToString("MM.dd.yyyy")<span> to </span>@Model.EndDate.Date.ToString("MM.dd.yyyy")</h6>
 					<p class="card-text">
 						@* PROJECT DESCRIPTION GOES HERE *@
 						@Model.Description
@@ -115,38 +115,25 @@
 			</div>
 		}
 	</div>
-	@* TICKETS COLLAPSABLE TABLE*@
-	<p>
-		<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-			Link with href
-		</a>
-		<button class="btn btn-primary" type="button" data-toggle="collapse" @*data-target="#collapseExample"*@ aria-expanded="false" aria-controls="collapseExample">
-			Button with data-target
-		</button>
-	</p>
-	<div class="collapse" @*id="collapseExample"*@>
-		<div class="card card-body">
-			Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-		</div>
-	</div>
 
 	@*****Tickets table*@
+	<h3>Project Tickets</h3>
 	<div class="table-responsive mt-4">
 		<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
+			<thead>
+				<tr>
+					<th><h5>ID</h5></th>
+					<th><h5>Title</h5></th>
+					
+				</tr>
+			</thead>
 			@foreach (Ticket ticket in Model.Tickets)
-			{
-				<thead>
-					<tr>
-						<th><h5>ID</h5></th>
-						<th><h5>Title</h5></th>
-						<th><h5>Description</h5></th>
-					</tr>
-				</thead>
+			{				
 				<tbody>
 					<tr>
 						<td>@ticket.Id</td>
 						<td>@ticket.Title</td>
-						<td>@ticket.Description</td>
+						
 					</tr>
 				</tbody>
 			}
