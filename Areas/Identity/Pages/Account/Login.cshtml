@@ -2,11 +2,139 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+	Layout = null;
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Log In</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+	<meta content="Coderthemes" name="author" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- App favicon -->
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+
+	<!-- App css -->
+
+	<link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+
+	<!-- icons -->
+	<link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body class="loading authentication-bg authentication-bg-pattern">
+
+	<div class="account-pages my-5">
+		<div class="container">
+
+			<div class="row justify-content-center">
+				<div class="col-md-8 col-lg-6 col-xl-4">
+					<div class="text-center">
+						<a href="index.html">
+							<img src="~/Landing/images/Tracker_black.png" alt="" height="30" class="mx-auto">
+						</a>
+						<p class="text-muted mt-2 mb-4">Your optimized bug tracker.</p>
+
+					</div>
+					<div class="card">
+						<div class="card-body p-4">
+
+							<div class="text-center mb-4">
+								<h4 class="text-uppercase mt-0">Sign In</h4>
+							</div>
+
+							<form id="account" method="post">
+								<h2>Use a local account to log in.</h2>
+								<hr />
+								<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+								<div class="form-floating mb-3">
+									<input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+									<label asp-for="Input.Email" class="form-label">Email</label>
+									<span asp-validation-for="Input.Email" class="text-danger"></span>
+								</div>
+								<div class="form-floating mb-3">
+									<input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+									<label asp-for="Input.Password" class="form-label">Password</label>
+									<span asp-validation-for="Input.Password" class="text-danger"></span>
+								</div>
+								<div class="checkbox mb-3">
+									<label asp-for="Input.RememberMe" class="form-label">
+										<input class="form-check-input" asp-for="Input.RememberMe" />
+										@Html.DisplayNameFor(m => m.Input.RememberMe)
+									</label>
+								</div>
+								<div>
+									<button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+								</div>
+								<div class="text-center mt-2">
+									<p>
+										<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+									</p>
+@*									<p>
+										<a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+									</p>*@
+									<p>
+										<a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+									</p>
+								</div>
+							</form>
+							<hr />
+							<div>
+								<section>
+									<h3 class="text-center mt-3">Or use one of the Demo Accounts to log in. </h3>
+									<div class="mb-1 text-center">
+										<form class="" id="account" method="post">
+											<div class="form-group">
+												<div class="row d-flex justify-content-center">
+													<div class="col-8 btn-block">
+														<button type="submit" style="width:inherit;height:min-content" class="btn btn-warning width-lg p-10 m-2" name="demoEmail" value="DemoAdminEmail">Demo Admin</button>
+														<button type="submit" style="width:inherit;height:min-content" class="btn btn-warning width-lg p-10 m-2" name="demoEmail" value="DemoPMEmail">Demo PM</button>
+														<button type="submit" style="width:inherit;height:min-content" class="btn btn-warning width-lg p-10 m-2" name="demoEmail" value="DemoDevEmail">Demo Developer</button>
+														<button type="submit" style="width:inherit;height:min-content" class="btn btn-warning width-lg p-10 m-2" name="demoEmail" value="DemoSubEmail">Demo Submitter</button>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+
+								</section>
+							</div>
+						</div> <!-- end card-body -->
+					</div>
+					<!-- end card -->
+
+				</div> <!-- end col -->
+			</div>
+			<!-- end row -->
+		</div>
+		<!-- end container -->
+	</div>
+	<!-- end page -->
+	<!-- Vendor -->
+	<script src="~/assets/libs/jquery/jquery.min.js"></script>
+	<script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+	<script src="~/assets/libs/node-waves/waves.min.js"></script>
+	<script src="~/assets/libs/waypoints/lib/jquery.waypoints.min.js"></script>
+	<script src="~/assets/libs/jquery.counterup/jquery.counterup.min.js"></script>
+	<script src="~/assets/libs/feather-icons/feather.min.js"></script>
+
+	<!-- App js -->
+	<script src="~/assets/js/app.min.js"></script>
+
+</body>
+</html>
+
+@*<div class="row">
     <div class="col-md-4">
         <section>
             <form id="account" method="post">
@@ -35,11 +163,11 @@
                 <div>
                     <p>
                         <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
+                    </p>*@
+@*                    <p>
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
+                    </p>*@
+@*                    <p>
                         <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
                     </p>
                 </div>
@@ -68,8 +196,12 @@
 
         </section>
     </div>
-</div>
+</div>*@
+
+
+
+
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+	<partial name="_ValidationScriptsPartial" />
 }

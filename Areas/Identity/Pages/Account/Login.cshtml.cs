@@ -116,7 +116,9 @@ namespace TheIssueTracker.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Demo User logged in.");
-                    return LocalRedirect(returnUrl);
+                    //return LocalRedirect(returnUrl);
+                    return RedirectToAction("Dashboard", "Home");
+
                 }
                 else
                 {
@@ -133,7 +135,7 @@ namespace TheIssueTracker.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("Dashboard", "Home");
                 }
                 if (result.RequiresTwoFactor)
                 {

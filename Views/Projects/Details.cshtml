@@ -2,148 +2,204 @@
 @using TheIssueTracker.Services.Interfaces;
 @using Microsoft.AspNetCore.Identity;
 @model TheIssueTracker.Models.Project
-@inject IBTProjectService _projectService;
 
+@inject IBTRolesService _rolesService
+@inject IBTProjectService _projectService;
+@inject UserManager<BTUser> UserManager;
 
 
 @{
 	ViewData["Title"] = "Details";
+	
 }
 
 
 <div class="p-3 d-flex flex-column">
 
-	<div class="row g-3 mb-3 p-3 border border-2 shadow-lg bg-light">
-		<h1>Project Details</h1>
-		<div class="col-12">
+	<div class="row">
+		<h1>Project: @Model.Name</h1>
+		<div class="col-lg-7">
 			<div class="card">
-				<div class="card-header d-flex">
-					@* PROJECT'S STATUS *@
-
-					@if (Model.Archived)
-					{
-						<h5 class="badge bg-secondary">Archived</h5>
-					}
-					else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(Model.EndDate, DateTimeKind.Utc).Date)
-					{
-						<h5 class="badge bg-danger">Overdue</h5>
-					}
-					else
-					{
-						<h5 class="badge bg-info">In Progress</h5>
-					}
-
-					@* ONLY SHOW THESE BUTTONS IF THEY'RE ALLOWED TO DO THESE ACTIONS *@
-					@if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-					{
-						<div class="ms-auto">
-							<a class="btn btn-sm btn-soft-success" asp-controller="Projects" asp-action="Edit">Edit</a>
-							<a class="btn btn-sm btn-soft-secondary" asp-controller="Projects" asp-action="Archive">Archive</a>
-						</div>
-					}
-				</div>
 				<div class="card-body">
-					@* PROJECT NAME GOES HERE *@
-					<h5 class="card-title">@Model.Name</h5>
-					<h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date.ToString("MM.dd.yyyy")<span> to </span>@Model.EndDate.Date.ToString("MM.dd.yyyy")</h6>
-					<p class="card-text">
-						@* PROJECT DESCRIPTION GOES HERE *@
-						@Model.Description
-					</p>
-				</div>
-				<div class="card-footer fw-bold lead">
-					Project Manager: @* Either the PM's name or "Unassigned" *@
-					@if ((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId)) is null)
-					{
-						<h5>Unassigned</h5>
-					}
-					else
-					{
-						<h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
-					}
-				</div>
-			</div>
-		</div>
-		<div class="col-12">
-			<div class="row">
-				<div class="col-12 col-lg-6">
-					<div class="card h-100">
-						@* DISPLAY LIST OF DEVELOPERS ON PROJECT *@
-						<div class="card-header">
-							Developers
+					<ul class="nav nav-pills navtab-bg nav-justified">
+						<li class="nav-item">
+							<a href="#home1" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
+								Project Details
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="#messages1" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+								Project Members
+							</a>
+						</li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane show active" id="home1">
+							<div class="col-12">
+								<div class="card">
+									<div class="card-header d-flex">
+										@* PROJECT'S STATUS *@
+
+										@if (Model.Archived)
+										{
+											<h5 class="badge bg-secondary">Archived</h5>
+										}
+										else if (DateTime.UtcNow.Date > DateTime.SpecifyKind(Model.EndDate, DateTimeKind.Utc).Date)
+										{
+											<h5 class="badge bg-danger">Overdue</h5>
+										}
+										else
+										{
+											<h5 class="badge bg-info">In Progress</h5>
+										}
+
+										@* ONLY SHOW THESE BUTTONS IF THEY'RE ALLOWED TO DO THESE ACTIONS *@
+										@if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+										{
+											<div class="ms-auto">
+												<a class="btn btn-sm btn-soft-success" asp-controller="Projects" asp-action="Edit">Edit</a>
+												<a class="btn btn-sm btn-soft-secondary" asp-controller="Projects" asp-action="Archive">Archive</a>
+											</div>
+										}
+									</div>
+									<div class="card-body">
+										@* PROJECT NAME GOES HERE *@
+										<h5 class="card-title">@Model.Name</h5>
+										<h6 class="card-subtitle mb-4 text-muted">@Model.StartDate.Date.ToString("MM.dd.yyyy")<span> to </span>@Model.EndDate.Date.ToString("MM.dd.yyyy")</h6>
+										<p class="card-text">
+											@* PROJECT DESCRIPTION GOES HERE *@
+											@Model.Description
+										</p>
+									</div>
+									<div class="card-footer fw-bold lead">
+										Project Manager: @* Either the PM's name or "Unassigned" *@
+										@if ((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId)) is null)
+										{
+											<h5>Unassigned</h5>
+										}
+										else
+										{
+											<h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
+										}
+									</div>
+									@* Only show the "manage project members" button if they're allowed to assign members to this project *@
+									@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
+									{
+										<div class="col-12 p-2">
+											<div class="d-flex flex-column align-items-stretch align-items-lg-end">
+												<a asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
+													Manage Project Members
+												</a>
+												<a asp-action="ManageUserRoles" asp-controller="Company" class="btn btn-soft-warning width-lg m-1">
+													Manage Member Roles
+												</a>
+											</div>
+										</div>
+									}
+								</div>
+							</div>
 						</div>
-						<div class="card-body">
-							<ul>
-								@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Developer), Model.CompanyId)))
-								{
-									<li>@user.FullName</li>
-								}
-							</ul>
+						<div class="tab-pane" id="messages1">
+							<div class="col-12">
+								<div class="row">
+									<div class="col-12 col-lg-6">
+										<div class="card h-100">
+											@* DISPLAY LIST OF DEVELOPERS ON PROJECT *@
+											<div class="card-header">
+												Developers
+											</div>
+											<div class="card-body">
+												<ul>
+													@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Developer), Model.CompanyId)))
+													{
+														<li>@user.FullName</li>
+													}
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-lg-6">
+										<div class="card h-100">
+											@* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
+											<div class="card-header">
+												Submitters
+											</div>
+											<div class="card-body">
+												<ul>
+													@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
+													{
+														<li>@user.FullName</li>
+													}
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-12 col-lg-6">
-					<div class="card h-100">
-						@* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
-						<div class="card-header">
-							Submitters
-						</div>
-						<div class="card-body">
-							<ul>
-								@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
-								{
-									<li>@user.FullName</li>
-								}
-							</ul>
-						</div>
+				<div class="col-lg-5">
+					<h1 class="header-title mb-4">Project Details</h1>
+					<div class="table-responsive mt-4">
+						<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
+							<thead>
+								<tr>
+									<th><h5>---</h5></th>
+									<th><h5>Title</h5></th>
+								</tr>
+							</thead>
+							@foreach (Ticket ticket in Model.Tickets)
+							{
+								<tbody>
+									<tr>
+										<td>
+											<a class="btn btn-sm btn-soft-success" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">Edit</a>
+											@foreach (BTUser user in (await _rolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), Model.CompanyId)))
+											{
+												
+											}
+										</td>
+										<td>@ticket.Title</td>
+
+									</tr>
+								</tbody>
+							}
+						</table>
 					</div>
 				</div>
-			</div>
+			</div> <!-- end card-->
 		</div>
-		@* Only show the "manage project members" button if they're allowed to assign members to this project *@
-		@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
-		{
-			<div class="col-12 p-2">
-				<div class="d-flex flex-column align-items-stretch align-items-lg-end">
-					<a asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
-						Manage Project Members
-					</a>
-					<a asp-action="ManageUserRoles" asp-controller="Company" class="btn btn-soft-warning width-lg m-1">
-						Manage Member Roles
-					</a>
-				</div>
-			</div>
-		}
+		<div class="mt-5 ms-auto">
+			<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+		</div>
 	</div>
 
-	@*****Tickets table*@
-	<h3>Project Tickets</h3>
-	<div class="table-responsive mt-4">
-		<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
-			<thead>
-				<tr>
-					<th><h5>ID</h5></th>
-					<th><h5>Title</h5></th>
-					
-				</tr>
-			</thead>
-			@foreach (Ticket ticket in Model.Tickets)
-			{				
-				<tbody>
-					<tr>
-						<td>@ticket.Id</td>
-						<td>@ticket.Title</td>
-						
-					</tr>
-				</tbody>
-			}
-		</table>
+</div>
+
+
+<div class="card mb-1">
+	<div class="card-header" id="headingOne">
+		<h5 class="m-0">
+			<a class="text-dark" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true">
+				<i class="mdi mdi-help-circle me-1 text-primary"></i>
+				What is Vakal text here?
+			</a>
+		</h5>
 	</div>
 
-	<div class="mt-5 ms-auto">
-		<a asp-action="Index" class="btn btn-dark">Back to List</a>
+	<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+		<div class="card-body">
+			Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute,
+			non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon
+			tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil
+			anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan
+			excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt
+			you probably haven't heard of them accusamus labore sustainable VHS.
+		</div>
 	</div>
 </div>
+
 
 @section Scripts{
 	<script>
