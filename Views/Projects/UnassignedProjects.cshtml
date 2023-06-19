@@ -35,151 +35,147 @@
 	</div>
 
 	<div class="row">
-		@foreach (Project project in Model)
-		{
-			<div class="col-xl-4">
-				<div class="card" style="max-width: 30rem">
-					<div class="card-header">
-						<div class="row">
-							<div class="col">
-								<h5 style="color:darkred">
-									<a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@project.Id" data-bs-toggle="modal" data-bs-target="#AssignPM" class="btn btn-soft-warning rounded-pill d-flex justify-content-center"><i class="mdi mdi-plus"></i>Project Manager</a>
-								</h5>
-							</div>
-						</div>
-					</div>
-					<div class="card-body">
-						<div class="text-center">
-							<span class="text-muted">Priority Level: </span> @if (project.ProjectPriority!.Name == "Urgent")
-							{
-								<h5 style="color:firebrick">Urgent</h5>
-							}
-							else if (project.ProjectPriority!.Name == "High")
-							{
-								<h5 style="color:orangered">High</h5>
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<table id="datatable" class="table table-striped table-bordered dt-responsive nowrap">
+						<thead>
+							<tr>
 
-							}
-							else if (project.ProjectPriority!.Name == "Medium")
-							{
-								<h5 style="color:darkslateblue">Medium</h5>
-							}
-							else if (project.ProjectPriority!.Name == "Low")
-							{
-								<h5 style="color:forestgreen">Low</h5>
-							}
-						</div>
-						<div><a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-center">@project.Name</h5></a></div>
-						<div class="text-truncate">
-							<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><p class="text-center">@project.Description</p></a>
-						</div>
-					</div>
+								<th>Name</th>
+								<th>Due Date</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
 
-					<div class="card-footer">
-						<div class="row row-cols-2">
-							<div class="col">
-								Developers: @*@(await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), project.CompanyId))*@
-							</div>
-							<div class="col">
-								Submitters: @*@(await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.Submitter), project.CompanyId))*@
-							</div>
-						</div>
-					</div>
+
+						<tbody>
+							@foreach (Project project in Model)
+							{
+								<tr>
+
+									<td>
+										<a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id"><h5 class="card-title text-start">@project.Name</h5></a>
+									</td>
+									<td>
+										@project.EndDate.ToString("MM.dd.yyyy") - @if (project.ProjectPriority!.Name == "Urgent")
+										{
+											<span style="color:firebrick">Urgent</span>
+										}
+										else if (project.ProjectPriority!.Name == "High")
+										{
+											<span style="color:orangered">High</span>
+
+										}
+										else if (project.ProjectPriority!.Name == "Medium")
+										{
+											<span style="color:darkslateblue">Medium</span>
+										}
+										else if (project.ProjectPriority!.Name == "Low")
+										{
+											<span style="color:forestgreen">Low</span>
+										}
+									</td>
+									<td class="d-flex justify-content-center">
+										<a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-info width-sm m-1">Details</a>
+										<a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-soft-warning width-sm m-1"><i class="mdi mdi-plus"></i> Assign PM</a>
+										<a asp-action="Edit" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-soft-success width-sm m-1">Edit</a>
+										<a asp-action="Archive" asp-controller="Projects" asp-route-id="@project.Id" class="btn btn-soft-secondary width-sm m-1">Archive</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
 				</div>
 			</div>
-		}
+
+		</div>
 	</div>
+
+
 </div>
 
 
+@*MODALS*@
 
-@foreach (Project project in Model)
-{
-	<!-- Button trigger modal -->
-	@*<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AssignPM">
-	Launch demo modal
-</button>
-*@
-	<!-- Modal -->
-	@*Assign PM Modal*@
-	<div class="modal fade" id="AssignPM" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="AssignPMLabel">Assign Project Manager to Project</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form asp-action="AssignPM" method="post" class="d-flex flex-column">
-						<input type="hidden" @*asp-for="@Model.Id"*@ />
-						<select class="form-control" @*asp-items="@Model.PMList" asp-for="@Id"*@>
-							<option value="">Unassigned</option>
-						</select>
-						<div class="modal-footer d-flex justify-content-center">
-							<a type="submit" class="btn btn-success my-3">Save</a>
-							<a data-bs-dismiss="modal" @*asp-action="UnassignedProjects" asp-controller="Projects"*@ class="btn btn-secondary">Cancel</a>
-						</div>
-					</form>
-				</div>
+@*CREATE PROJECT Modal*@
+<div class="modal fade" id="ProjectsCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ProjectsCreateLabel">Create New Project</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-		</div>
-	</div>
-
-
-	<!-- CREATE PROJECT Modal -->
-	<div class="modal fade" id="ProjectsCreate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="ProjectsCreateLabel">Create New Project</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form asp-action="Create" enctype="multipart/form-data">
-						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-						<div class="row">
-							<div class="col-12 col-lg-4">
-								<div class="form-group">
-									<label asp-for="@project.ImageFormFile" class="control-label">Project Image</label>
-									<img class="img-fluid border rounded-3 mb-2" style="max-height: 350px;" src="@_FileService.ConvertByteArrayToFile(project.ImageFileData,project.ImageFileType,DefaultImage.ProjectImage)" id="blogImage">
-									<input asp-for="@project.ImageFormFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
-										   onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
-								</div>
-								<div class="form-group">
-									<label asp-for="@project.Name" class="control-label"></label>
-									<input asp-for="@project.Name" class="form-control" />
-									<span asp-validation-for="@project.Name" class="text-danger"></span>
-								</div>
-								<div class="form-group">
-									<label asp-for="@project.StartDate" class="control-label"></label>
-									<input asp-for="@project.StartDate" class="form-control" />
-									<span asp-validation-for="@project.StartDate" class="text-danger"></span>
-								</div>
-								<div class="form-group">
-									<label asp-for="@project.EndDate" class="control-label"></label>
-									<input asp-for="@project.EndDate" class="form-control" />
-									<span asp-validation-for="@project.EndDate" class="text-danger"></span>
-								</div>
+			<div class="modal-body">
+				@{
+					Project newProject = new();
+				}
+				<form asp-action="Create" asp-controller="Projects" method="post" enctype="multipart/form-data">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="row">
+						<div class="col-12 col-lg-4">
+							<div class="form-group">
+								<label asp-for="@newProject.ImageFormFile" class="control-label">Project Image</label>
+								<img class="img-fluid border rounded-3 mb-2" style="max-height: 350px;" src="@_FileService.ConvertByteArrayToFile(newProject.ImageFileData,newProject.ImageFileType,DefaultImage.ProjectImage)">
+								<input asp-for="@newProject.ImageFormFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
+									   onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
 							</div>
-							<div class="col-12 col-lg-8">
-								<div class="form-group">
-									<label asp-for="@project.Description" class="control-label"></label>
-									<textarea asp-for="@project.Description" class="editor form-control"></textarea>
-									<span asp-validation-for="@project.Description" class="text-danger"></span>
-								</div>
-								<div class="form-group" id="tagContainer">
-									<label asp-for="@project.ProjectPriorityId" class="control-label">Project Priority</label>
-									<select asp-for="@project.ProjectPriorityId" class="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
-								</div>
+							<div class="form-group">
+								<label asp-for="@newProject.Name" class="control-label"></label>
+								<input asp-for="@newProject.Name" class="form-control" />
+								<span asp-validation-for="@newProject.Name" class="text-danger"></span>
+							</div>
+							<div class="form-group">
+								<label asp-for="@newProject.StartDate" class="control-label"></label>
+								<input asp-for="@newProject.StartDate" class="form-control" />
+								<span asp-validation-for="@newProject.StartDate" class="text-danger"></span>
+							</div>
+							<div class="form-group">
+								<label asp-for="@newProject.EndDate" class="control-label"></label>
+								<input asp-for="@newProject.EndDate" class="form-control" />
+								<span asp-validation-for="@newProject.EndDate" class="text-danger"></span>
 							</div>
 						</div>
-						<div class="modal-footer">
-							<input type="submit" value="Create" class="btn btn-success" />
-							<input type="submit" value="Close" data-bs-dismiss="modal" class="btn btn-secondary" />
+						<div class="col-12 col-lg-8">
+							<div class="form-group">
+								<label asp-for="@newProject.Description" class="control-label"></label>
+								<textarea asp-for="@newProject.Description" class="editor form-control"></textarea>
+								<span asp-validation-for="@newProject.Description" class="text-danger"></span>
+							</div>
+							<div class="form-group" id="tagContainer">
+								<label asp-for="@newProject.ProjectPriorityId" class="control-label">Project Priority</label>
+								<select asp-for="@newProject.ProjectPriorityId" class="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
+							</div>
 						</div>
-					</form>
-				</div>
-
+					</div>
+					<div class="modal-footer">
+						<input type="submit" value="Create" class="btn btn-success" />
+						<input type="submit" value="Close" asp-action="Index" data-bs-dismiss="modal" class="btn btn-secondary" />
+					</div>
+				</form>
 			</div>
+
 		</div>
 	</div>
+</div>
+<div class="mt-5 ms-auto">
+	<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<!--CK Editor-->
+	<script src="https://cdn.ckeditor.com/ckeditor5/37.1.0/classic/ckeditor.js"></script>
+
+	<script>
+		ClassicEditor
+			.create(document.querySelector('.editor'), {
+				licenseKey: '',
+			})
+			.then(editor => {
+				window.editor = editor;
+			});
+	</script>
 }

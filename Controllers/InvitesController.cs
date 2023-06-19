@@ -49,7 +49,9 @@ namespace TheIssueTracker.Controllers
 		// GET: Invites/Create	
         public async Task<IActionResult> Create()
 		{
-			List<Project> companyProjects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
+            int companyId = User.Identity!.GetCompanyId();
+
+            List<Project> companyProjects = await _projectService.GetAllProjectsByCompanyIdAsync(User.Identity!.GetCompanyId());
 
 			ViewData["ProjectId"] = new SelectList(companyProjects, "Id", "Name");
 

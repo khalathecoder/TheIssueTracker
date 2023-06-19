@@ -5,6 +5,7 @@
 
 @inject IBTRolesService _rolesService
 @inject IBTProjectService _projectService;
+@inject IBTFileService _fileService;
 @inject UserManager<BTUser> UserManager;
 
 
@@ -17,7 +18,7 @@
 <div class="p-3 d-flex flex-column">
 
 	<div class="row">
-		<h1>Project: @Model.Name</h1>
+		<h1 class="mb-2">Project: @Model.Name</h1>
 		<div class="col-lg-7">
 			<div class="card">
 				<div class="card-body">
@@ -57,8 +58,8 @@
 										@if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
 										{
 											<div class="ms-auto">
-												<a class="btn btn-sm btn-soft-success" asp-controller="Projects" asp-action="Edit">Edit</a>
-												<a class="btn btn-sm btn-soft-secondary" asp-controller="Projects" asp-action="Archive">Archive</a>
+												<a class="btn btn-sm btn-soft-success" asp-controller="Projects" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+												<a class="btn btn-sm btn-soft-secondary" asp-controller="Projects" asp-action="Archive" asp-route-id="@Model.Id">Archive</a>
 											</div>
 										}
 									</div>
@@ -71,31 +72,45 @@
 											@Model.Description
 										</p>
 									</div>
-									<div class="card-footer fw-bold lead">
-										Project Manager: @* Either the PM's name or "Unassigned" *@
+									<div class="card-footer fw-bold lead d-flex">
+										 
+										<h5>Project Manager: </h5>
+										<br>
 										@if ((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId)) is null)
 										{
-											<h5>Unassigned</h5>
+											<br>
+											<h5 style="text-muted">Unassigned</h5>
 										}
 										else
 										{
-											<h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FullName)</h5>
+											<br>
+											<h5>@((await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId))!.FirstName)</h5>
 										}
+											
+										@if (User.IsInRole("Admin") && (await _projectService.GetProjectManagerAsync(Model.Id, Model.CompanyId) is not null))
+										{
+											<div class="ms-auto">
+												<div class="d-flex flex-column align-items-stretch align-items-lg-start">
+													<a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
+														Change PM
+													</a>
+												</div>
+											</div>
+										} 
+										else
+										{
+											<div class="ms-auto">
+												<div class="d-flex flex-column align-items-stretch align-items-lg-start">
+													<a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
+														Assign PM
+													</a>
+												</div>
+											</div>
+										}
+
 									</div>
 									@* Only show the "manage project members" button if they're allowed to assign members to this project *@
-									@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
-									{
-										<div class="col-12 p-2">
-											<div class="d-flex flex-column align-items-stretch align-items-lg-end">
-												<a asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
-													Manage Project Members
-												</a>
-												<a asp-action="ManageUserRoles" asp-controller="Company" class="btn btn-soft-warning width-lg m-1">
-													Manage Member Roles
-												</a>
-											</div>
-										</div>
-									}
+								
 								</div>
 							</div>
 						</div>
@@ -109,80 +124,101 @@
 												Developers
 											</div>
 											<div class="card-body">
-												<ul>
+												<ul style="list-style-type: none">
 													@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Developer), Model.CompanyId)))
 													{
-														<li>@user.FullName</li>
+														<li>
+														<a href="#" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="@user.FullName">
+															<img src="@_fileService.ConvertByteArrayToFile(user!.ImageFileData,user!.ImageFileType,DefaultImage.BTUserImage)" class="rounded-circle avatar-sm" alt="friend" />
+														</a>
+														<span>@user.FullName</span>
+														</li>
 													}
 												</ul>
 											</div>
 										</div>
 									</div>
-									<div class="col-12 col-lg-6">
+									<div class="col-8 col-lg-6">
 										<div class="card h-100">
 											@* DISPLAY LIST OF SUBMITTERS ON PROJECT *@
 											<div class="card-header">
 												Submitters
 											</div>
 											<div class="card-body">
-												<ul>
+												<ul style="list-style-type: none">
 													@foreach (BTUser user in (await _projectService.GetProjectMembersByRoleAsync(Model.Id, nameof(BTRoles.Submitter), Model.CompanyId)))
 													{
-														<li>@user.FullName</li>
+														<li>
+														<a href="#" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-placement="top" title="@user.FullName">
+															<img src="@_fileService.ConvertByteArrayToFile(user!.ImageFileData,user!.ImageFileType,DefaultImage.BTUserImage)" class="rounded-circle avatar-sm" alt="friend" />
+														</a>
+														<span>@user.FullName</span>
+														</li>
 													}
 												</ul>
 											</div>
 										</div>
 									</div>
+									@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
+									{
+										<div class="col-4 p-2">
+											<div class="d-flex flex-column align-items-stretch align-items-lg-start">
+												<a asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-soft-info width-lg m-1 ">
+													Manage Project Members
+												</a>
+											</div>
+										</div>
+									}
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="col-lg-5">
-					<h1 class="header-title mb-4">Project Details</h1>
-					<div class="table-responsive mt-4">
-						<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
-							<thead>
-								<tr>
-									<th><h5>---</h5></th>
-									<th><h5>Title</h5></th>
-								</tr>
-							</thead>
-							@foreach (Ticket ticket in Model.Tickets)
-							{
-								<tbody>
-									<tr>
-										<td>
-											<a class="btn btn-sm btn-soft-success" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">Edit</a>
-											@foreach (BTUser user in (await _rolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), Model.CompanyId)))
-											{
-												
-											}
-										</td>
-										<td>@ticket.Title</td>
-
-									</tr>
-								</tbody>
-							}
-						</table>
-					</div>
-				</div>
+				</div>				
 			</div> <!-- end card-->
 		</div>
-		<div class="mt-5 ms-auto">
-			<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+		<div class="col-lg-5">
+			<h1 class="header-title mb-4">Tickets of This Project</h1>
+			<div class="table-responsive mt-4">
+				<table class="table table-hover table-bordered text-center no-wrap" id="datatable">
+					<thead>
+						<tr>
+							<th><h5>&nbsp;</h5></th>
+							<th><h5>Title</h5></th>
+						</tr>
+					</thead>
+					@foreach (Ticket ticket in Model.Tickets)
+					{
+						<tbody>
+							<tr>
+								<td>
+									<a class="btn btn-sm btn-soft-info" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">Details</a>
+									@if (User.IsInRole("Admin") || (User.IsInRole("ProjectManager")) || (User.IsInRole("Developer")))
+									{
+									
+									<a class="btn btn-sm btn-soft-success" asp-controller="Tickets" asp-action="Edit" asp-route-id="@ticket.Id">Edit</a>
+									}
+								</td>
+								<td>@ticket.Title</td>
+
+							</tr>
+						</tbody>
+					}
+				</table>
+			</div>
 		</div>
+
+		
 	</div>
 
 </div>
+<div class="mt-5 ms-auto">
+	<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
 
-
-<div class="card mb-1">
+@*<div class="card mb-1">
 	<div class="card-header" id="headingOne">
 		<h5 class="m-0">
-			<a class="text-dark" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true">
-				<i class="mdi mdi-help-circle me-1 text-primary"></i>
+			<a class="text-dark" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true">				
 				What is Vakal text here?
 			</a>
 		</h5>
@@ -198,7 +234,7 @@
 			you probably haven't heard of them accusamus labore sustainable VHS.
 		</div>
 	</div>
-</div>
+</div>*@
 
 
 @section Scripts{

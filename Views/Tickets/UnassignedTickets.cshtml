@@ -117,8 +117,17 @@
 									}
 								</td>
 								<td class="d-flex justify-content-evenly">
-									<a asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id" data-bs-toggle="modal" data-bs-target="#AssignDeveloper" type="button" class="btn btn-soft-warning waves-effect waves-light">Assign Developer</a>
-									<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" data-bs-toggle="modal" data-bs-target="#TicketsEdit" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									@if ((User.IsInRole("Admin") || User.IsInRole("Project Manager")))
+									{
+										<a asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id" data-bs-toggle="modal" data-bs-target="#AssignDeveloper" type="button" class="btn btn-soft-warning waves-effect waves-light">Assign Developer</a>
+										
+									}
+									@if (!User.IsInRole("Submitter"))
+									{
+										<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									}
+
+									
 									@*<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
 *@
 								</td>

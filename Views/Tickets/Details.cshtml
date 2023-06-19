@@ -154,27 +154,27 @@
 
 
 				@*<div class="attached-files mt-3">
-					<h5>Attached Files </h5>
-					<ul class="list-inline files-list">
-						<li class="list-inline-item file-box">
-							<a href=""><img src="assets/images/attached-files/img-1.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
-							<p class="font-13 mb-1 text-muted"><small>File one</small></p>
-						</li>
-						<li class="list-inline-item file-box">
-							<a href=""><img src="assets/images/attached-files/img-2.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
-							<p class="font-13 mb-1 text-muted"><small>Attached-2</small></p>
-						</li>
-						<li class="list-inline-item file-box">
-							<a href=""><img src="assets/images/attached-files/img-3.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
-							<p class="font-13 mb-1 text-muted"><small>Dribbble shot</small></p>
-						</li>
-						<li class="list-inline-item file-box ms-2">
-							<div class="fileupload add-new-plus">
-								<span><i class="mdi-plus mdi"></i>Add file(s)</span>
-								<input type="file" class="upload">
-							</div>
-						</li>
-					</ul>
+				<h5>Attached Files </h5>
+				<ul class="list-inline files-list">
+				<li class="list-inline-item file-box">
+				<a href=""><img src="assets/images/attached-files/img-1.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
+				<p class="font-13 mb-1 text-muted"><small>File one</small></p>
+				</li>
+				<li class="list-inline-item file-box">
+				<a href=""><img src="assets/images/attached-files/img-2.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
+				<p class="font-13 mb-1 text-muted"><small>Attached-2</small></p>
+				</li>
+				<li class="list-inline-item file-box">
+				<a href=""><img src="assets/images/attached-files/img-3.jpg" class="img-fluid img-thumbnail" alt="attached-img" width="80"></a>
+				<p class="font-13 mb-1 text-muted"><small>Dribbble shot</small></p>
+				</li>
+				<li class="list-inline-item file-box ms-2">
+				<div class="fileupload add-new-plus">
+				<span><i class="mdi-plus mdi"></i>Add file(s)</span>
+				<input type="file" class="upload">
+				</div>
+				</li>
+				</ul>
 				</div>*@
 
 			</div>
@@ -232,63 +232,63 @@
 
 <!-- Modal -->
 @*Edit Tickets Modal*@
-	<div class="modal fade" id="TicketsEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="staticBackdropLabel">Edit Ticket</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form asp-action="Edit" asp-controller="Tickets" method="post">
-						<input type="hidden" asp-for="@Model.Id" />
-						<input type="hidden" asp-for="@Model.Created" />
-						<input type="hidden" asp-for="@Model.SubmitterUserId" />
+<div class="modal fade" id="TicketsEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="staticBackdropLabel">Edit Ticket</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Edit" asp-controller="Tickets" method="post">
+					<input type="hidden" asp-for="@Model.Id" />
+					<input type="hidden" asp-for="@Model.Created" />
+					<input type="hidden" asp-for="@Model.SubmitterUserId" />
 					<input type="hidden" asp-for="@Model.DeveloperUserId" />
 					<input type="hidden" asp-for="@Model.ProjectId" />
 					<input type="hidden" asp-for="@Model.Archived" />
 					<input type="hidden" asp-for="@Model.ArchivedByProject" />
-						<div class="row g-3 p-2">
-							<div class="col-12 d-flex justify-content-center">
-								<div class="row">
-									<div class="col-12">
-										<label asp-for="@Model.Title" class="control-label"></label>
-										<input asp-for="@Model.Title" class="form-control" />
-										<span asp-validation-for="@Model.Title" class="text-danger"></span>
-									</div>
-									<div class="col-12">
-										<label asp-for="@Model.Description" class="control-label"></label>
+					<div class="row g-3 p-2">
+						<div class="col-12 d-flex justify-content-center">
+							<div class="row">
+								<div class="col-12">
+									<label asp-for="@Model.Title" class="control-label"></label>
+									<input asp-for="@Model.Title" class="form-control" />
+									<span asp-validation-for="@Model.Title" class="text-danger"></span>
+								</div>
+								<div class="col-12">
+									<label asp-for="@Model.Description" class="control-label"></label>
 									<input asp-for="@Model.Description" class="form-control" />
 									<span asp-validation-for="@Model.Description" class="text-danger"></span>
-									</div>
-									<div class="col-12 mt-2">
+								</div>
+								<div class="col-12 mt-2">
 									<label asp-for="@Model.TicketTypeId" class="control-label"></label>
 									<select asp-for="@Model.TicketTypeId" class="form-control" asp-items="@ViewBag.TicketTypeId"></select>
 									<span asp-validation-for="@Model.TicketTypeId" class="text-danger"></span>
-									</div>
-									<div class="col-12 mt-2">
-										<label asp-for="@Model.TicketStatusId" class="control-label"></label>
+								</div>
+								<div class="col-12 mt-2">
+									<label asp-for="@Model.TicketStatusId" class="control-label"></label>
 									<select asp-for="@Model.TicketStatusId" class="form-control" asp-items="@ViewBag.TicketStatusId"></select>
 									<span asp-validation-for="@Model.TicketStatusId" class="text-danger"></span>
-									</div>
-									<div class="col-12 mt-2">
+								</div>
+								<div class="col-12 mt-2">
 									<label asp-for="@Model.TicketPriorityId" class="control-label"></label>
 									<select asp-for="@Model.TicketPriorityId" class="form-control" asp-items="@ViewBag.TicketPriorityId"></select>
 									<span asp-validation-for="@Model.TicketPriorityId" class="text-danger"></span>
-									</div>
-									<div class="col-12 d-flex justify-content-center mt-2">
-										<button type="submit" class="btn btn-lg btn-primary rounded-pill">Save</button>
-									</div>
+								</div>
+								<div class="col-12 d-flex justify-content-center mt-2">
+									<button type="submit" class="btn btn-lg btn-primary rounded-pill">Save</button>
 								</div>
 							</div>
 						</div>
-					</form>
+					</div>
+				</form>
 
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-				</div>
 			</div>
 		</div>
 	</div>
+</div>

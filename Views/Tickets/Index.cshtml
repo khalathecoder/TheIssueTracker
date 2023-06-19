@@ -43,7 +43,7 @@
 							{
 								<tr>
 									<td>
-										<a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a>
+										<a id="inline-firstname" asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a>
 									</td>
 									<td>
 										<a asp-controller="Projects" asp-action="Details" asp-route-id="@ticket.Project.Id">@ticket.Project!.Name</a>
@@ -126,8 +126,8 @@
 											<h5 class="badge bg-light">General Task</h5>
 										}
 									</td>
-									<td class="d-flex justify-content-between">
-										<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" data-bs-toggle="modal" data-bs-target="#TicketsEdit" class="btn btn-soft-success waves-effect waves-light">Edit</a>
+									<td class="d-flex justify-content-evenly">
+										<a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-success waves-effect waves-light">Edit</a>
 										<a asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id" type="button" class="btn btn-soft-dark waves-effect waves-light">Archive</a>
 									</td>
 								</tr>
